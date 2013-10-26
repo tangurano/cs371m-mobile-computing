@@ -1,9 +1,15 @@
 package com.cs371m.notesync;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Locale;
+
+import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -74,6 +80,32 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+        ArrayList<Note> notes = new ArrayList<Note>();
+        ArrayList<Note> notesCopy = new ArrayList<Note>();
+        Note note = new Note();
+        notes.add(note);
+        note.course = "COURSE";
+        note.image = "IMAGE";
+        note.recording = "RECORDING";
+        note.topic = "TOPIC";
+        note.timestamps = new ArrayList<Integer>();
+        note.timestamps.add(5);
+        note.bookmarks = new ArrayList<Point>();
+        note.bookmarks.add(new Point(1,1));
+        
+        try {
+			Helper.writeNotes(notes, getApplicationContext());
+			notesCopy = Helper.loadNotes(getApplicationContext());
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XmlPullParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     @Override
