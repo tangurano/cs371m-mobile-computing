@@ -1,3 +1,0 @@
-INDEX VERSION 1.126+/v/filer4b/v38q001/ctang/cs371m/cs371m-mobile-computing/.metadata/.plugins/org.eclipse.jdt.core
-1736958154.index
-1802766195.index
