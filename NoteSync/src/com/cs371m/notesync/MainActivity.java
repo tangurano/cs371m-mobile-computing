@@ -228,6 +228,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+        /* Test for loadNotes and writeNotes
         ArrayList<Note> notes = new ArrayList<Note>();
         ArrayList<Note> notesCopy = new ArrayList<Note>();
         Note note = new Note();
@@ -240,6 +241,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         note.timestamps.add(5);
         note.bookmarks = new ArrayList<Point>();
         note.bookmarks.add(new Point(1,1));
+        
         
         try {
 			Helper.writeNotes(notes, getApplicationContext());
@@ -254,6 +256,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		*/
     }
 
     @Override
