@@ -8,4 +8,7 @@
     <string name="title_section3">Section 3</string>
  	<string name="startRecord">Start Rec</string>
  	<string name="stopRecord">Stop Rec</string>
+ 	<string name="startPlaying">Start Playing</string>
+ 	<string name="stopPlaying">Stop Playing</string>
+ 	
 </resources>

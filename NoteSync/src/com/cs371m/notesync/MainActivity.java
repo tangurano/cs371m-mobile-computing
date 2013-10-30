@@ -1,44 +1,27 @@
 package com.cs371m.notesync;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Locale;
-
-import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
-import android.graphics.Point;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.text.format.Time;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import android.app.Activity;
-import android.widget.LinearLayout;
-import android.os.Environment;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.content.Context;
-import android.util.Log;
-import android.media.MediaRecorder;
-import android.media.MediaPlayer;
-
-import java.io.IOException;
+import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -104,24 +87,32 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+	      //Retrieve and set time stamp 
+	        time.setToNow();
+	        startRecTime=Long.toString(time.toMillis(false)); //ignore DST?
+	      //Setting the audio file save path
+	        //mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+	        
+	        mFileName = this.getApplicationContext().getFilesDir().getAbsolutePath();
+	        //mFileName = this.getApplicationContext().getFilesDir().getAbsolutePath();
+	        //File f = this.getApplicationContext().openFileOutput(name, mode).getFilesDir();
+	        //mFileName += "/NoteSync/rec/"+startRecTime+".3gp";
+	        mFileName += "/"+startRecTime+".3gp";
+	        
+	        Log.v(LOG_TAG, "File name created:"+ mFileName+ "\n");
+        
         mRecorder.setOutputFile(mFileName);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
             mRecorder.prepare();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(LOG_TAG, "prepare() failed: " + e.getMessage());
         }
 
         mRecorder.start();
-        //Retrieve and set time stamp 
-        time.setToNow();
-        startRecTime=time.toString();
-      //Setting the audio file save path
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-     
-        mFileName += "NoteSync/rec/"+startRecTime+".3gp";
-        Log.v(LOG_TAG, "File name created:"+ mFileName+ "\n");
+        
+        
         
     }
 
@@ -139,9 +130,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             	
                 onRecord(mStartRecording);
                 if (mStartRecording) {
-                	mRecordButton.setText("Stop recording");
+                	mRecordButton=(Button) findViewById(R.id.mRecordButton);
+                    mRecordButton.setText(R.string.stopRecord);
                 } else {
-                	mRecordButton.setText("Start recording");
+                	mRecordButton.setText(R.string.startRecord);
                 }
                 mStartRecording = !mStartRecording;
             }
@@ -162,9 +154,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             {
                 onPlay(mStartPlaying);
                 if (mStartPlaying) {
-                	mPlayButton.setText("Stop playing");
+                	mPlayButton=(Button) findViewById(R.id.mPlayButton);
+                	mPlayButton.setText(R.string.stopPlaying);
                 } else {
-                	mPlayButton.setText("Start playing");
+                	mPlayButton.setText(R.string.startPlaying);
                 }
                 mStartPlaying = !mStartPlaying;
             }
@@ -184,8 +177,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         setContentView(R.layout.activity_main);
         mStartRecording=true;
         mStartPlaying = true;
-        mRecordButton=(Button) findViewById(R.id.mRecordButton);
-        mPlayButton=(Button) findViewById(R.id.mPlayButton);
+        //FIXME: doesn't work b/c fragment not visible
+        //mRecordButton=(Button) findViewById(R.id.mRecordButton);
+        //mPlayButton=(Button) findViewById(R.id.mPlayButton);
         /*
         LinearLayout ll = new LinearLayout(this);
         mRecordButton = new RecordButton(this);
@@ -266,6 +260,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		
 		*/
+        
+        
     }
 
     @Override
@@ -365,6 +361,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             View rootView = inflater.inflate(R.layout.fragment_main_dummy, container, false);
             TextView dummyTextView = (TextView) rootView.findViewById(R.id.section_label);
             dummyTextView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+            
             return rootView;
         }
     }
