@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,5 +12,19 @@
         android:id="@+id/section_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
-</RelativeLayout>
+     <Button
+                android:id="@+id/mRecordButton"
+                android:layout_width= "wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp" 
+                android:text="@string/startRecord"
+                android:onClick="onClickStartRec"/>
+     
+	  <Button
+                android:id="@+id/mPlayButton"
+               	android:layout_width= "wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"  
+                android:text="@string/stopRecord"
+                android:onClick="onClickStartPlay"/>
+</LinearLayout>

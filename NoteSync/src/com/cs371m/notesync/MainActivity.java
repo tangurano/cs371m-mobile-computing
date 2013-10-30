@@ -45,13 +45,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private static final String LOG_TAG = "AudioRecordTest";
     private static String mFileName = null;
 
-    private RecordButton mRecordButton = null;
+    private Button mRecordButton = null;
     private MediaRecorder mRecorder = null;
 
-    private PlayButton   mPlayButton = null;
+    private Button   mPlayButton = null;
     private MediaPlayer   mPlayer = null;
     private String startRecTime=null;
-    
+    boolean mStartRecording, mStartPlaying;
+
     Time time = new Time();
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -116,6 +117,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         //Retrieve and set time stamp 
         time.setToNow();
         startRecTime=time.toString();
+      //Setting the audio file save path
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+     
+        mFileName += "NoteSync/rec/"+startRecTime+".3gp";
+        Log.v(LOG_TAG, "File name created:"+ mFileName+ "\n");
         
     }
 
@@ -124,63 +130,63 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mRecorder.release();
         mRecorder = null;
     }
-    
-    class RecordButton extends Button {
-        boolean mStartRecording = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
+//    
+ // class RecordButton extends Button {
+//        boolean mStartRecording = true;
+//
+//        OnClickListener clicker = new OnClickListener() {
+            public void onClickStartRec(View v) {
+            	
                 onRecord(mStartRecording);
                 if (mStartRecording) {
-                    setText("Stop recording");
+                	mRecordButton.setText("Stop recording");
                 } else {
-                    setText("Start recording");
+                	mRecordButton.setText("Start recording");
                 }
                 mStartRecording = !mStartRecording;
             }
-        };
+       // };
 
-        public RecordButton(Context ctx) {
-            super(ctx);
-            setText("Start recording");
-            setOnClickListener(clicker);
-        }
-    }
+//        public RecordButton(Context ctx) {
+//            super(ctx);
+//            setText("Start recording");
+//            setOnClickListener(clicker);
+//        }
+    //}
 
-    class PlayButton extends Button {
-        boolean mStartPlaying = true;
+//    class PlayButton extends Button {
+//        boolean mStartPlaying = true;
 
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
+//        OnClickListener clicker = new OnClickListener() {
+            public void onClickStartPlay(View v) 
+            {
                 onPlay(mStartPlaying);
                 if (mStartPlaying) {
-                    setText("Stop playing");
+                	mPlayButton.setText("Stop playing");
                 } else {
-                    setText("Start playing");
+                	mPlayButton.setText("Start playing");
                 }
                 mStartPlaying = !mStartPlaying;
             }
-        };
-
-        public PlayButton(Context ctx) {
-            super(ctx);
-            setText("Start playing");
-            setOnClickListener(clicker);
-        }
-    }
-    public MainActivity() {
-    	//Setting the audio file save path
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-     
-        mFileName += "NoteSync/rec/"+startRecTime+".3gp";
-        Log.v(LOG_TAG, "File name created:"+ mFileName+ "\n");
-    }
+//        };
+//
+//        public PlayButton(Context ctx) {
+//            super(ctx);
+//            setText("Start playing");
+//            setOnClickListener(clicker);
+//        }
+//    }
+ 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
        
-        //setContentView(R.layout.activity_main);
-        //For right now define buttons in here instead of xml
+        setContentView(R.layout.activity_main);
+        mStartRecording=true;
+        mStartPlaying = true;
+        mRecordButton=(Button) findViewById(R.id.mRecordButton);
+        mPlayButton=(Button) findViewById(R.id.mPlayButton);
+        /*
         LinearLayout ll = new LinearLayout(this);
         mRecordButton = new RecordButton(this);
         ll.addView(mRecordButton,
@@ -194,7 +200,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 0));
+        
         setContentView(ll);
+        */
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
