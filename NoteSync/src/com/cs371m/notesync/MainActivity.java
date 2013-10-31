@@ -4,7 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 import android.app.ActionBar;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -21,6 +26,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
@@ -36,7 +42,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private String startRecTime=null;
 	boolean mStartRecording, mStartPlaying;
 	protected ArrayList<Note> notes;
-
+	//0: Title 1: Class Name 2: Tag(s)
+	//Create enumeration class of the 3 types above
+	protected static EditText [] txtInputVals= new EditText[3];
+	protected static String [] inputVals= new String[3];
 	Time time = new Time();
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -52,7 +61,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
+	public void showEditRecInfoDialog() {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new EditRecInfoDialogFragment();
+        dialog.show(getSupportFragmentManager(), "Edit Title Fragment");
+    }
 
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        // User touched the dialog's positive button
+        ...
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
+        ...
+    }
 	private void onRecord(boolean start) {
 		if (start) {
 			startRecording();
@@ -83,6 +111,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private void stopPlaying() {
 		mPlayer.release();
 		mPlayer = null;
+		
+		//Prompt for edit dialog
+		
 	}
 	
 	private void startRecording() {
@@ -119,8 +150,82 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mRecorder.stop();
 		mRecorder.release();
 		mRecorder = null;
+	
+		showEditRecInfoDialog();
 	}
-
+	
+	
+	public static class EditRecInfoDialogFragment extends DialogFragment 
+	{
+		 public interface EditRecInfoDialogListener 
+		 {
+		        public void onDialogPositiveClick(DialogFragment dialog);
+		        public void onDialogNegativeClick(DialogFragment dialog);
+		  }
+		 
+		EditRecInfoDialogListener mListener;
+		
+		// Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
+	    @Override
+	    public void onAttach(Activity activity) 
+	    {
+	        super.onAttach(activity);
+	        // Verify that the host activity implements the callback interface
+	        try {
+	            // Instantiate the NoticeDialogListener so we can send events to the host
+	            mListener = (EditRecInfoDialogListener) activity;
+	        } catch (ClassCastException e) {
+	            // The activity doesn't implement the interface, throw exception
+	            throw new ClassCastException(activity.toString()
+	                    + " must implement NoticeDialogListener");
+	        }
+	    }
+		public Dialog onCreateDialog(Bundle savedInstanceState) 
+		{
+			
+			 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity ());
+			    // Get the layout inflater
+			    LayoutInflater inflater = getActivity ().getLayoutInflater();
+			    final View diag_view = inflater.inflate(R.layout.edit_title_dialog, null);
+			    // Inflate and set the layout for the dialog
+			    // Pass null as the parent view because its going in the dialog layout
+			    builder.setView(inflater.inflate(R.layout.edit_title_dialog, null))
+			    // Add action buttons
+			           .setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
+			               @Override
+			               public void onClick(DialogInterface dialog, int id) {
+			                   //Retrieve entered Title, Course name and Tags.
+			            	   for(int i=0; i< 3; i++)
+			            	   {
+			            		   txtInputVals[i]= (EditText) diag_view.findViewById(R.id.changeClass); 
+				                   if(txtInputVals[i] == null) 
+				                   {
+				                	   Log.d("View["+i+"]", "NULL");
+				                	   return;
+				                   }
+				                   else
+				                   {
+				                       inputVals[i]= txtInputVals[i].getText().toString();
+				                       mListener.onDialogPositiveClick(EditRecInfoDialogFragment.this, inputVals[i]);
+				                   }
+			            	   }
+			            
+			            	   //Fill in a Note obj w/ the input str values
+			            	   //Add this entry to notebook view
+			            	   
+			               }
+			           })
+			           .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+			               public void onClick(DialogInterface dialog, int id) {
+			            	   //GIve default name
+			            	   EditRecInfoDialogFragment.this.getDialog().cancel();
+			               }
+			           }); 
+			    //Return the created dialogue box
+			    return builder.create();
+		}
+	}
+	
 	public void onClickStartRec(View v) {
 
 		onRecord(mStartRecording);
