@@ -23,7 +23,44 @@ import android.util.Xml;
 public class Helper {
 	
 	private static String filename = "NoteSyncNotes.xml";
+/*
+	public static ArrayList<Note> loadNotes(Context c) throws Exception {
+		FileInputStream fis = c.openFileInput(filename);
+		ObjectInputStream is = new ObjectInputStream(fis);
+		ArrayList<Note> notes = (ArrayList<Note>) is.readObject();
+		is.close();
+		return notes;
+	}
+	
+	public static void serializeNotes(ArrayList<Note> notes, Context c) throws Exception {
+		 FileOutputStream fos = c.openFileOutput(filename,Context.MODE_PRIVATE);
+		 ObjectOutputStream os = new ObjectOutputStream(fos);
+		 os.writeObject(notes);
+		 os.close();
+	}
+    Test for loadNotes and writeNotes 
+        ArrayList<Note> notes = new ArrayList<Note>();
+        ArrayList<Note> notesCopy = new ArrayList<Note>();
+        Note note = new Note();
+        notes.add(note);
+        note.course = "COURSE";
+        note.image = "IMAGE";
+        note.recording = "RECORDING";
+        note.topic = "TOPIC";
+        note.timestamps = new ArrayList<Integer>();
+        note.timestamps.add(5);
+        note.bookmarks = new ArrayList<Point>();
+        note.bookmarks.add(new Point(1,1));
 
+
+        try {
+			Helper.writeNotes(notes, getApplicationContext());
+			notesCopy = Helper.loadNotes(getApplicationContext());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	*/
 	public static ArrayList<Note> loadNotes(Context c) throws XmlPullParserException, IOException
 	{
 		boolean mExternalStorageAvailable = false;
@@ -111,11 +148,13 @@ public class Helper {
 		return notes;
 	}
 	
-	public static void writeNotes(ArrayList<Note> notes, Context c) throws FileNotFoundException, IOException
+	public static void writeNotes(ArrayList<Note> notes, boolean append, Context c) throws FileNotFoundException, IOException
 	{
 		 FileOutputStream fos;       
-
-		 fos = c.openFileOutput(filename,Context.MODE_PRIVATE);
+		 if (append)
+			 fos = c.openFileOutput(filename, Context.MODE_APPEND);
+		 else
+			 fos = c.openFileOutput(filename,Context.MODE_PRIVATE);
 		 XmlSerializer xmlSerializer = Xml.newSerializer();
 		 xmlSerializer.setOutput(fos, "UTF-8");
 		 xmlSerializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
@@ -171,4 +210,5 @@ public class Helper {
 		 xmlSerializer.flush();
 		 fos.close();
 	}
+	
 }

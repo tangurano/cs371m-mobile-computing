@@ -1,11 +1,11 @@
 package com.cs371m.notesync;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Locale;
-
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -35,6 +35,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private MediaPlayer   mPlayer = null;
 	private String startRecTime=null;
 	boolean mStartRecording, mStartPlaying;
+	protected ArrayList<Note> notes;
 
 	Time time = new Time();
 	/**
@@ -83,6 +84,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mPlayer.release();
 		mPlayer = null;
 	}
+	
 	private void startRecording() {
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -111,9 +113,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 
 		mRecorder.start();
-
-
-
 	}
 
 	private void stopRecording() {
@@ -121,14 +120,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mRecorder.release();
 		mRecorder = null;
 	}
-	//    
-	// class RecordButton extends Button {
-	//        boolean mStartRecording = true;
-	//
-	//        OnClickListener clicker = new OnClickListener() {
+
 	public void onClickStartRec(View v) {
 
 		onRecord(mStartRecording);
+		/*
+		Note note = new Note();
+        notes.add(note);
+        note.course = "COURSE";
+        note.image = "IMAGE";
+        note.recording = "RECORDING";
+        note.topic = "TOPIC";
+        note.timestamps = new ArrayList<Integer>();
+        note.timestamps.add(5);
+        note.bookmarks = new ArrayList<Point>();
+        note.bookmarks.add(new Point(1,1));
+        */
 		if (mStartRecording) {
 			mRecordButton=(Button) findViewById(R.id.mRecordButton);
 			mRecordButton.setText(R.string.stopRecord);
@@ -137,22 +144,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		mStartRecording = !mStartRecording;
 	}
-	// };
 
-	//        public RecordButton(Context ctx) {
-	//            super(ctx);
-	//            setText("Start recording");
-	//            setOnClickListener(clicker);
-	//        }
-	//}
-
-	//    class PlayButton extends Button {
-	//        boolean mStartPlaying = true;
-
-	//        OnClickListener clicker = new OnClickListener() {
 	public void onClickStartPlay(View v) 
 	{
 		onPlay(mStartPlaying);
+		// notes = new ArrayList<Note>();
 		if (mStartPlaying) {
 			mPlayButton=(Button) findViewById(R.id.mPlayButton);
 			mPlayButton.setText(R.string.stopPlaying);
@@ -161,14 +157,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		mStartPlaying = !mStartPlaying;
 	}
-	//        };
-	//
-	//        public PlayButton(Context ctx) {
-	//            super(ctx);
-	//            setText("Start playing");
-	//            setOnClickListener(clicker);
-	//        }
-	//    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -180,23 +168,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		//FIXME: doesn't work b/c fragment not visible
 		//mRecordButton=(Button) findViewById(R.id.mRecordButton);
 		//mPlayButton=(Button) findViewById(R.id.mPlayButton);
-		/*
-        LinearLayout ll = new LinearLayout(this);
-        mRecordButton = new RecordButton(this);
-        ll.addView(mRecordButton,
-            new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                0));
-        mPlayButton = new PlayButton(this);
-        ll.addView(mPlayButton,
-            new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                0));
 
-        setContentView(ll);
-		 */
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -229,39 +201,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					actionBar.newTab()
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
-		}
-		/* Test for loadNotes and writeNotes
-        ArrayList<Note> notes = new ArrayList<Note>();
-        ArrayList<Note> notesCopy = new ArrayList<Note>();
-        Note note = new Note();
-        notes.add(note);
-        note.course = "COURSE";
-        note.image = "IMAGE";
-        note.recording = "RECORDING";
-        note.topic = "TOPIC";
-        note.timestamps = new ArrayList<Integer>();
-        note.timestamps.add(5);
-        note.bookmarks = new ArrayList<Point>();
-        note.bookmarks.add(new Point(1,1));
-
-
-        try {
-			Helper.writeNotes(notes, getApplicationContext());
-			notesCopy = Helper.loadNotes(getApplicationContext());
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (XmlPullParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		 */
-
-
+		}	
 	}
 
 	@Override
@@ -270,19 +210,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	@Override
-	public void onPause() {
-		super.onPause();
-		if (mRecorder != null) {
-			mRecorder.release();
-			mRecorder = null;
-		}
 
-		if (mPlayer != null) {
-			mPlayer.release();
-			mPlayer = null;
-		}
-	}
 	@Override
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 		// When the given tab is selected, switch to the corresponding page in
@@ -316,6 +244,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			switch(position) {
 			case 0:
 				return new RecordViewFragment();
+			case 1:
+				return new NotesViewFragment();
 			default:
 				Fragment fragment = new DummySectionFragment();
 				Bundle args = new Bundle();
@@ -371,22 +301,58 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
-	public static class RecordViewFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
-		public static final String ARG_SECTION_NUMBER = "section_number";
 
-		public RecordViewFragment() {
+	@Override
+	protected void onResume() {
+		super.onResume();
+		try {
+			notes = Helper.loadNotes(this.getApplicationContext());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			notes = new ArrayList<Note>();
+		}
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (mRecorder != null) {
+			mRecorder.release();
+			mRecorder = null;
 		}
 
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.record_view_fragment, container, false);
-
-			return rootView;
+		if (mPlayer != null) {
+			mPlayer.release();
+			mPlayer = null;
+		}
+		try {
+			Helper.writeNotes(notes, false, this.getApplicationContext());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		try {
+			Helper.writeNotes(notes, false, this.getApplicationContext());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		try {
+			Helper.writeNotes(notes, false, this.getApplicationContext());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

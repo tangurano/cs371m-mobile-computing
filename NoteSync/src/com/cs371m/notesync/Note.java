@@ -1,11 +1,11 @@
 package com.cs371m.notesync;
 
-import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import android.graphics.Point;
 
-public class Note {
+public class Note implements Serializable{
 	public String course;
 	public String topic;
 	public String image;
