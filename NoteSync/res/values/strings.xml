@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">NoteSync</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+	<string name="app_name">NoteSync</string>
+	<string name="action_settings">Settings</string>
+	<string name="title_section1">Record</string>
+	<string name="title_section2">Notebook</string>
+	<string name="title_section3">Study</string>
  	<string name="startRecord">Start Recording</string>
  	<string name="stopRecord">Stop Recording</string>
  	<string name="startPlaying">Start Playing</string>
  	<string name="stopPlaying">Stop Playing</string>
+<<<<<<< HEAD
  	<string name="addTitle">Recording Title</string>
  	<string name="addClass">Class Name</string>
  	<string name="addTag">Tag(s)</string>
  	<string name="done">Done</string>
  	<string name="cancel">Cancel</string>
+=======
+>>>>>>> 48c87b197e8c6599b764a22e546a3719f286467a
 </resources>

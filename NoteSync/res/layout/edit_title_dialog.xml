@@ -4,7 +4,7 @@
     android:layout_height="wrap_content">
     <EditText
         android:id="@+id/changeTitle"
-        android:inputType="textEmailAddress"
+        android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -14,7 +14,7 @@
         android:hint="@string/addTitle" />
     <EditText
         android:id="@+id/changeClass"
-        android:inputType="textEmailAddress"
+        android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -24,7 +24,7 @@
         android:hint="@string/addClass" />
     <EditText
         android:id="@+id/changeTags"
-        android:inputType="textPassword"
+        android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
