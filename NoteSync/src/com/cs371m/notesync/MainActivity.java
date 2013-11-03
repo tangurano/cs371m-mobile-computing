@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.Locale;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -36,6 +39,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private String startRecTime=null;
 	boolean mStartRecording, mStartPlaying;
 	protected ArrayList<Note> notes;
+	private WakeLock mWakeLock;
 
 	Time time = new Time();
 	/**
@@ -70,6 +74,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 
 	private void startPlaying() {
+		mWakeLock.acquire();
 		mPlayer = new MediaPlayer();
 		try {
 			mPlayer.setDataSource(mFileName);
@@ -82,10 +87,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	private void stopPlaying() {
 		mPlayer.release();
+		mWakeLock.release();
 		mPlayer = null;
 	}
 	
 	private void startRecording() {
+		mWakeLock.acquire();
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -118,13 +125,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private void stopRecording() {
 		mRecorder.stop();
 		mRecorder.release();
+		mWakeLock.release();
 		mRecorder = null;
 	}
 
 	public void onClickStartRec(View v) {
 
 		onRecord(mStartRecording);
-		/*
+		
 		Note note = new Note();
         notes.add(note);
         note.course = "COURSE";
@@ -135,7 +143,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         note.timestamps.add(5);
         note.bookmarks = new ArrayList<Point>();
         note.bookmarks.add(new Point(1,1));
-        */
+        
 		if (mStartRecording) {
 			mRecordButton=(Button) findViewById(R.id.mRecordButton);
 			mRecordButton.setText(R.string.stopRecord);
@@ -180,6 +188,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
+		
+		mWakeLock = ((PowerManager)this.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "recordlock");
 
 		// When swiping between different sections, select the corresponding
 		// tab. We can also use ActionBar.Tab#select() to do this if we have
@@ -216,6 +226,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// When the given tab is selected, switch to the corresponding page in
 		// the ViewPager.
 		mViewPager.setCurrentItem(tab.getPosition());
+		if (tab.getPosition() == 1) {
+			FragmentPagerAdapter adapter = (FragmentPagerAdapter) mViewPager.getAdapter();
+			if (adapter != null) {
+				NotesViewFragment frag = (NotesViewFragment) adapter.instantiateItem(mViewPager, 1);
+				if (frag != null)
+					frag.updateList();
+			}
+		}
 	}
 
 	@Override
@@ -305,6 +323,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	@Override
 	protected void onResume() {
 		super.onResume();
+		if (mWakeLock == null) {
+			mWakeLock = ((PowerManager)this.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "recordlock");
+		}
 		try {
 			notes = Helper.loadNotes(this.getApplicationContext());
 		} catch (Exception e) {
