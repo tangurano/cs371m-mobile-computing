@@ -42,6 +42,9 @@ local.properties
 .settings/
 .loadpath
 
+#temporary files
+*~
+
 # External tool builders
 .externalToolBuilders/
 
