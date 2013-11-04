@@ -53,11 +53,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private WakeLock mWakeLock;
 
 	protected static ArrayList<Note> notes;
+	protected static ArrayList<Integer> tempTimestamps;
 	//0: Title 1: Class Name 2: Tag(s)
 	//Create enumeration class of the 3 types above
 	protected static EditText [] txtInputVals= new EditText[3];
 	protected static String [] inputVals= new String[3];
-	Time time = new Time();
+	static Time time = new Time();
 	private static boolean clickedOk=false; 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -170,7 +171,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
-	private void stopPlaying() {
+	private void stopPlaying() 
+	{
 		mPlayer.release();
 		mWakeLock.release();
 		mPlayer = null;
@@ -229,6 +231,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 
 
+	
 	public static class EditRecInfoDialogFragment extends DialogFragment 
 	{
 		public interface EditRecInfoDialogListener 
@@ -258,48 +261,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		 */
 		public Dialog onCreateDialog(Bundle savedInstanceState) 
 		{
-<<<<<<< HEAD
-			
-			    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity ());
-			    // Get the layout inflater
-			    LayoutInflater inflater = getActivity ().getLayoutInflater();
-			    //DialogInterface onClickInterface=new DialogInterface.OnClickListener();
-			    // Inflate and set the layout for the dialog
-			    // Pass null as the parent view because its going in the dialog layout
-			    builder.setView(inflater.inflate(R.layout.edit_title_dialog, null))
-			    // Add action buttons
-			           .setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
-			               @Override
-			               public void onClick(DialogInterface dialog, int id) 
-			               {
-			            	
-			                   //Retrieve entered Title, Course name and Tags.
-			            		   txtInputVals[0]= (EditText) ((AlertDialog) dialog).findViewById(R.id.changeTitle); 
-				                   inputVals[0]= txtInputVals[0].getText().toString();
-				                   txtInputVals[1]= (EditText) ((AlertDialog) dialog).findViewById(R.id.changeClass); 
-				                   inputVals[1]= txtInputVals[1].getText().toString();
-				                   txtInputVals[2]= (EditText) ((AlertDialog) dialog).findViewById(R.id.changeTags); 
-				                   inputVals[2]= txtInputVals[2].getText().toString();
-				                   clickedOk=true;
-				                   
-			            	   }
-			  
-			               }
-			           )
-			           .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-			               public void onClick(DialogInterface dialog, int id) {
-			            	   //Give default name
-			            	   EditRecInfoDialogFragment.this.getDialog().cancel();
-			               }
-			           }); 
-			    //Return the created dialogue box
-			    return builder.create();
-=======
-
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity ());
 			// Get the layout inflater
 			LayoutInflater inflater = getActivity ().getLayoutInflater();
-			View diag_view = inflater.inflate(R.layout.edit_title_dialog, null);
 			//DialogInterface onClickInterface=new DialogInterface.OnClickListener();
 			// Inflate and set the layout for the dialog
 			// Pass null as the parent view because its going in the dialog layout
@@ -321,8 +285,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 				}
 
-			}
-					)
+			})
 					.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							//Give default name
@@ -331,7 +294,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					}); 
 			//Return the created dialogue box
 			return builder.create();
->>>>>>> c965fc94c4179ced1824b3e94d9918332c7872db
+
 		}
 
 		@Override
@@ -346,7 +309,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				Note perNote= new Note();
 				perNote.topic=inputVals[0];
 				perNote.course=inputVals[1];
+				//Update timeStamp
+				
+				//Debug
+				perNote.timestamps=tempTimestamps;
+				//Rest temparray list
 				notes.add(perNote);
+				tempTimestamps=new ArrayList<Integer>();
 			}
 			clickedOk=false;
 		}
@@ -376,6 +345,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mPlayButton.setText(R.string.startPlaying);
 		}
 		mStartPlaying = !mStartPlaying;
+	}
+
+	public void onClickMakeTag(View v)
+	{
+
+		//Get current timestamp
+		time.setToNow();
+		Long currTimel=time.toMillis(false);
+		int currTime=Integer.valueOf(currTimel.intValue());
+		//add to temp arrayList of timestamps
+		tempTimestamps.add(currTime);
 	}
 
 	@Override
@@ -541,10 +521,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		try {
 			notes = Helper.loadNotes(this.getApplicationContext());
+			tempTimestamps= new ArrayList<Integer>();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			notes = new ArrayList<Note>();
+			
 		}
 	}
 

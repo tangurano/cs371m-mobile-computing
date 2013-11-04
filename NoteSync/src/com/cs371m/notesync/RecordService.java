@@ -88,8 +88,6 @@ public class RecordService extends Service{
 		}
 	}
 
-	//@Override
-	//public void onStart(Intent intent, int startid) {
 	public void Record() {
 		if (!isRunning) {
 			isRunning = true;
