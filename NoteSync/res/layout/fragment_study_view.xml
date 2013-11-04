@@ -22,7 +22,7 @@
         android:scaleType="fitCenter" />
     
     <MediaController
-        android:id="@+id/mediaController1"
+        android:id="@+id/mediaController"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/imgDisplay"
