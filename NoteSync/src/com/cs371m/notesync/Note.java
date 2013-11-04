@@ -5,7 +5,8 @@ import java.util.ArrayList;
 
 import android.graphics.Point;
 
-public class Note implements Serializable{
+public class Note implements Serializable
+{
 	public String course;
 	public String topic;
 	public String image;

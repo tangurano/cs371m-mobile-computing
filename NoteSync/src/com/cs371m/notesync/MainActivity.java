@@ -4,11 +4,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 import android.app.ActionBar;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -28,6 +33,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,10 +49,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private MediaPlayer   mPlayer = null;
 	private String startRecTime=null;
 	boolean mStartRecording, mStartPlaying;
-	protected ArrayList<Note> notes;
+
 	private WakeLock mWakeLock;
 
+	protected static ArrayList<Note> notes;
+	//0: Title 1: Class Name 2: Tag(s)
+	//Create enumeration class of the 3 types above
+	protected static EditText [] txtInputVals= new EditText[3];
+	protected static String [] inputVals= new String[3];
 	Time time = new Time();
+	private static boolean clickedOk=false; 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -61,6 +73,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
+	public void showEditRecInfoDialog() {
+		// Create an instance of the dialog fragment and show it
+		DialogFragment dialog = new EditRecInfoDialogFragment();
+		dialog.show(getFragmentManager(), "Edit Title Fragment");
+	}
 
 	private RecordService mBoundService;
 	private boolean mIsBound = false;
@@ -109,6 +126,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
+
+	// The dialog fragment receives a reference to this Activity through the
+	// Fragment.onAttach() callback, which it uses to call the following methods
+	// defined by the NoticeDialogFragment.NoticeDialogListener interface
+	public void onDialogPositiveClick() {
+		// User touched the dialog's positive button
+		Log.v(LOG_TAG, "clicked on pos");
+	}
+
+	public void onDialogNegativeClick(DialogFragment dialog) {
+		// User touched the dialog's negative button
+		Log.v(LOG_TAG, "clicked on neg");
+	}
+
 	private void onRecord(boolean start) {
 		if (start) {
 			startRecording();
@@ -129,10 +160,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mWakeLock.acquire();
 		mPlayer = new MediaPlayer();
 		try {
-			//mPlayer.setDataSource(mFileName);
-			mPlayer.setDataSource(notes.get(0).recording);
-			mPlayer.prepare();
-			mPlayer.start();
+			if (mFileName != null) {
+				mPlayer.setDataSource(mFileName);
+				mPlayer.prepare();
+				mPlayer.start();
+			}
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "prepare() failed");
 		}
@@ -142,6 +174,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mPlayer.release();
 		mWakeLock.release();
 		mPlayer = null;
+
+		//Prompt for edit dialog
+
 	}
 
 	private void startRecording() {
@@ -174,7 +209,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 
 		mRecorder.start();
-		*/
+		 */
 		if (mIsBound)
 			mBoundService.Record();
 	}
@@ -185,18 +220,102 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mRecorder.release();
 		mWakeLock.release();
 		mRecorder = null;
-		*/
+		 */
 		if (mIsBound) {
 			mFileName = ((RecordService) mBoundService).mFileName;
-			Note tempNote = new Note();
-			tempNote.recording = mFileName;
-			notes.add(0, tempNote);
 			mBoundService.Stop();
+		}	
+		showEditRecInfoDialog();
+	}
+
+
+	public static class EditRecInfoDialogFragment extends DialogFragment 
+	{
+		public interface EditRecInfoDialogListener 
+		{
+			public void onDialogPositiveClick(DialogFragment dialog);
+			public void onDialogNegativeClick(DialogFragment dialog);
 		}
+
+		//EditRecInfoDialogListener mListener;
+		/*
+		// Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
+	    @Override
+	    public void onAttach(Activity activity) 
+	    {
+	        super.onAttach(activity);
+	        // Verify that the host activity implements the callback interface
+	        try 
+	        {
+	            // Instantiate the NoticeDialogListener so we can send events to the host
+	            mListener = (EditRecInfoDialogListener) activity;
+	        } catch (ClassCastException e) {
+	            // The activity doesn't implement the interface, throw exception
+	            throw new ClassCastException(activity.toString()
+	                    + " must implement NoticeDialogListener");
+	        }
+	    }
+		 */
+		public Dialog onCreateDialog(Bundle savedInstanceState) 
+		{
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity ());
+			// Get the layout inflater
+			LayoutInflater inflater = getActivity ().getLayoutInflater();
+			View diag_view = inflater.inflate(R.layout.edit_title_dialog, null);
+			//DialogInterface onClickInterface=new DialogInterface.OnClickListener();
+			// Inflate and set the layout for the dialog
+			// Pass null as the parent view because its going in the dialog layout
+			builder.setView(inflater.inflate(R.layout.edit_title_dialog, null))
+			// Add action buttons
+			.setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) 
+				{
+
+					//Retrieve entered Title, Course name and Tags.
+					txtInputVals[0]= (EditText) ((AlertDialog) dialog).findViewById(R.id.changeTitle); 
+					inputVals[0]= txtInputVals[0].getText().toString();
+					txtInputVals[1]= (EditText) ((AlertDialog) dialog).findViewById(R.id.changeClass); 
+					inputVals[1]= txtInputVals[1].getText().toString();
+					txtInputVals[2]= (EditText) ((AlertDialog) dialog).findViewById(R.id.changeTags); 
+					inputVals[2]= txtInputVals[2].getText().toString();
+					clickedOk=true;
+
+				}
+
+			}
+					)
+					.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							//Give default name
+							EditRecInfoDialogFragment.this.getDialog().cancel();
+						}
+					}); 
+			//Return the created dialogue box
+			return builder.create();
+		}
+
+		@Override
+		public void onDetach()
+		{
+			super.onDetach();
+			Log.v(LOG_TAG, "onDetach() dialog\n");
+			if (clickedOk)
+			{
+				//Fill in a Note obj w/ the input str values
+				//Add this entry to notebook view
+				Note perNote= new Note();
+				perNote.topic=inputVals[0];
+				perNote.course=inputVals[1];
+				notes.add(perNote);
+			}
+			clickedOk=false;
+		}
+
 	}
 
 	public void onClickStartRec(View v) {
-
 		onRecord(mStartRecording);
 
 		if (mStartRecording) {
