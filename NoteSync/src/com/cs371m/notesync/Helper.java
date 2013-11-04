@@ -39,9 +39,13 @@ public class Helper {
 	    // To be safe, you should check that the SDCard is mounted
 	    // using Environment.getExternalStorageState() before doing this.
 
-	    File mediaStorageDir = new File(c.getApplicationContext().getFilesDir().getAbsolutePath());
-	    // This location works best if you want the created images to be shared
+	    //File mediaStorageDir = new File(c.getApplicationContext().getFilesDir().getAbsolutePath());
+		// This location works best if you want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
+		
+		File mediaStorageDir  = new File(c.getApplicationContext().getExternalFilesDir(null).getAbsolutePath()); 
+			//storage/sdcard0/Android/data/com.cs371m.notesync/files
+			//external seems to work
 
 	    // Create the storage directory if it does not exist
 	    if (! mediaStorageDir.exists()){

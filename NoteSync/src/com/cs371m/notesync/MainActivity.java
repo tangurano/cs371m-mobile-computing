@@ -57,6 +57,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private RecordService mBoundService;
 	private boolean mIsBound = false;
 	protected static ArrayList<Note> notes;
+	Note mCurrentNote;
 	protected static ArrayList<Integer> tempTimestamps;
 	//0: Title 1: Class Name 2: Tag(s)
 	//Create enumeration class of the 3 types above

@@ -9,7 +9,7 @@
     tools:context=".MainActivity$DummySectionFragment" >
 
     <ListView
-        android:id="@+id/android:list"
+        android:id="@id/android:list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_marginBottom="10dp"

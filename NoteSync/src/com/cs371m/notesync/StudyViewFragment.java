@@ -34,6 +34,8 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
     
     public MediaPlayer mediaPlayer; //to prevent replaying TODO: move to service
     
+    MainActivity activity; //always null?
+    
     public StudyViewFragment() {
     	
     }
@@ -44,16 +46,25 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
             Bundle savedInstanceState) {
     	View rootView = inflater.inflate(R.layout.fragment_study_view, container, false);
         ImageView image = (ImageView) rootView.findViewById(R.id.imgDisplay);
-        //? arguments Bundle vs savedInstanceState?
-        Bundle args = this.getArguments();
-		Context c = rootView.getContext();
+        //? arguments Bundle vs savedInstanceState? vs using mainActivity state?
+        	//external useful for testing
+		//String externalDirectory = rootView.getContext().getExternalFilesDir(null).getAbsolutePath(); //storage/sdcard0/Android/data/com.cs371m.notesync/files
+		//String appDirectory = c.getFilesDir().getAbsolutePath(); //getPath? //getFilesDir gives hidden internal directory /data/data
+		//String imgDirectory = c.getDir("img", Context.MODE_PRIVATE).getAbsolutePath(); //app_img
 		
-		//TODO: add pinch-zoom
-		drawImage(args, image, c);
-        
-		//start playing recording //TODO: test playback unaffected when returning to view
-		playRecording(args, c);
-
+		activity = (MainActivity) getActivity(); //re-init here?
+		if (activity.mCurrentNote != null ) {
+			if (activity.mCurrentNote.image != null)
+				drawImage(activity.mCurrentNote.image, image); //TODO: add pinch-zoom ///data/data/com.cs371m.notesync/files/IMG_20131104_102808.jpg
+			else
+				image.setImageResource(R.drawable.ic_launcher); //TODO: use NoteSync logo
+			
+			//TODO: test playback unaffected when returning to view
+			if (activity.mCurrentNote.recording != null && mediaPlayer == null)
+				playRecording(activity.mCurrentNote.recording, rootView.getContext());
+		} else
+			image.setImageResource(R.drawable.ic_launcher); //TODO: use NoteSync logo
+		
 		//TODO: add controls
 		MediaController mc = (MediaController) rootView.findViewById(R.id.mediaController);
 		
@@ -61,60 +72,45 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
     }
     
     
-    private void drawImage(Bundle args, ImageView image, Context c) {
-    	if (args != null && args.containsKey(ARG_IMAGE_PATH)) {
-        	String path = args.getString(ARG_IMAGE_PATH);
-        	//TODO: ensure the notebook view tells us the audio file and optionally images
-        	//TODO: validate correct path?
-        	try {
-        		//String appDirectory = c.getFilesDir().getAbsolutePath(); //getPath? //getFilesDir gives hidden internal directory /data/data
-        		//String imgDirectory = c.getDir("img", Context.MODE_PRIVATE).getAbsolutePath(); //app_img
-        		String externalDirectory = c.getExternalFilesDir(null).getAbsolutePath(); //storage/sdcard0/Android/data/com.cs371m.notesync/files
-        		Bitmap bmap = BitmapFactory.decodeFile(externalDirectory+path);
-            	if (bmap != null)
-            		image.setImageBitmap(bmap); //works for external storage
-            	else 
-            		image.setImageResource(R.drawable.ic_launcher);  //TODO: use different image indicating bad file
-        	} catch (Exception e) {
-        		Log.e(STUDY_VIEW_LOG_TAG, "Failed to decode image file at path: " + path + " with error: " + e.getMessage());
-        		image.setImageResource(R.drawable.ic_launcher);  //TODO: use different image indicating bad file
-        	}
-        }
-        else
-        	image.setImageResource(R.drawable.ic_launcher); //some default image TODO: use NoteSync logo
-    	
+    
+    private void drawImage(String path, ImageView image) {
+    	//TODO: validate correct path?
+    	try {
+    		if (!(new File(path).exists())) 
+    			throw new Exception("no such file exists");
+    		Bitmap bmap = BitmapFactory.decodeFile(path);
+        	if (bmap == null)
+        		throw new Exception("decoding file failed");
+    		image.setImageBitmap(bmap); //works for external storage
+        		
+    	} catch (Exception e) {
+    		Log.e(STUDY_VIEW_LOG_TAG, "Failed to display image at path: " + path + " with error: " + e.getMessage());
+    		image.setImageResource(R.drawable.ic_launcher);  //TODO: use different image indicating bad file
+    	}
     }
     
-    private void playRecording(Bundle args, Context c) {
-    	if (args != null && args.containsKey(ARG_RECORDING_PATH)) {
-			String path = args.getString(ARG_RECORDING_PATH);
-			String externalDirectory = c.getExternalFilesDir(null).getAbsolutePath(); //storage/sdcard0/Android/data/com.cs371m.notesync/files
-			File f = new File(externalDirectory+path);
-    		if (!f.exists()) 
-    			Log.e(STUDY_VIEW_LOG_TAG, "Failed to find recording file at path: " + externalDirectory+path);
-    		else {
-				Uri myUri = Uri.fromFile(f); // initialize Uri here
-	    		
-				//TODO: prevent replaying over itself
-				
-				//if (mediaPlayer == null) {
-					mediaPlayer = new MediaPlayer();
-			        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			        try {
-						mediaPlayer.setDataSource(c, myUri);
-						mediaPlayer.prepare(); //FIXME: async won't work
-					} catch (IOException e) { //TODO: handle other exceptions
-						Log.e(STUDY_VIEW_LOG_TAG, e.getMessage());
-					} catch (IllegalArgumentException e) {
-						Log.e(STUDY_VIEW_LOG_TAG, e.getMessage());
-					}
-			        mediaPlayer.start();
-				//}
-    		}
-	      
+    private void playRecording(String path, Context c) {
+		File f = new File(path);
+		if (!f.exists()) 
+			Log.e(STUDY_VIEW_LOG_TAG, "Failed to find recording file at path: " + path);
+		else {
+			Uri myUri = Uri.fromFile(f); // initialize Uri here
+    		
+			mediaPlayer = new MediaPlayer();
+	        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+	        try {
+				mediaPlayer.setDataSource(c, myUri);
+				mediaPlayer.prepare(); //FIXME: async won't work
+			} catch (IOException e) { //TODO: handle other exceptions
+				Log.e(STUDY_VIEW_LOG_TAG, e.getMessage());
+			} catch (IllegalArgumentException e) {
+				Log.e(STUDY_VIEW_LOG_TAG, e.getMessage());
+			}
+	        mediaPlayer.start();
+			
 		}
     }
-    /*
+    /*//causes failure to play
     public void onPrepared(MediaPlayer player) {
         player.start();
     }*/
