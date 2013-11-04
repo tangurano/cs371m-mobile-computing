@@ -1,5 +1,6 @@
 package com.cs371m.notesync;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -17,10 +18,12 @@ import android.content.DialogInterface;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -51,7 +54,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	boolean mStartRecording, mStartPlaying;
 
 	private WakeLock mWakeLock;
-
+	private RecordService mBoundService;
+	private boolean mIsBound = false;
 	protected static ArrayList<Note> notes;
 	//0: Title 1: Class Name 2: Tag(s)
 	//Create enumeration class of the 3 types above
@@ -73,14 +77,58 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
+
+	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+	public static final int MEDIA_TYPE_IMAGE = 1;
+
+	private Uri fileUri;
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+	        if (resultCode == RESULT_OK) {
+	        	if (data == null)
+	        		Toast.makeText(this, "Image saved correctly", Toast.LENGTH_SHORT).show();
+	        	else
+	        		Toast.makeText(this, "Image saved to:\n" +
+		                     data.getData(), Toast.LENGTH_LONG).show();
+	        } else if (resultCode == RESULT_CANCELED) {
+	            // User cancelled the image capture
+	        } else {
+	            // Image capture failed, advise user
+	        }
+	    }
+		showEditRecInfoDialog();
+	}
+	
+	public void startCameraIntent() {
+		// create Intent to take a picture and return control to the calling application
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+		fileUri = Helper.getOutputMediaFileUri(MEDIA_TYPE_IMAGE, this.getApplicationContext()); // create a file to save the image
+		
+		//TODO: Not saving to correct output path.
+		/*
+		startRecTime = "TESTNAME"; //ignore DST?
+
+		String temp = this.getFilesDir().getAbsolutePath();
+
+		temp += File.separator+startRecTime+".jpg";
+		fileUri = Uri.fromFile(new File(temp));
+		*/
+		
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+
+		// start the image capture Intent
+		startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+	}
+
 	public void showEditRecInfoDialog() {
 		// Create an instance of the dialog fragment and show it
 		DialogFragment dialog = new EditRecInfoDialogFragment();
 		dialog.show(getFragmentManager(), "Edit Title Fragment");
 	}
 
-	private RecordService mBoundService;
-	private boolean mIsBound = false;
 
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
@@ -174,58 +222,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mPlayer.release();
 		mWakeLock.release();
 		mPlayer = null;
-
-		//Prompt for edit dialog
-
 	}
 
 	private void startRecording() {
-		/*
-		mWakeLock.acquire();
-		mRecorder = new MediaRecorder();
-		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-		//Retrieve and set time stamp 
-		time.setToNow();
-		startRecTime=Long.toString(time.toMillis(false)); //ignore DST?
-		//Setting the audio file save path
-		//mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-
-		mFileName = this.getApplicationContext().getFilesDir().getAbsolutePath();
-		//mFileName = this.getApplicationContext().getFilesDir().getAbsolutePath();
-		//File f = this.getApplicationContext().openFileOutput(name, mode).getFilesDir();
-		//mFileName += "/NoteSync/rec/"+startRecTime+".3gp";
-		mFileName += "/"+startRecTime+".3gp";
-
-		Log.v(LOG_TAG, "File name created:"+ mFileName+ "\n");
-
-		mRecorder.setOutputFile(mFileName);
-		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-		try {
-			mRecorder.prepare();
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "prepare() failed: " + e.getMessage());
-		}
-
-		mRecorder.start();
-		 */
 		if (mIsBound)
 			mBoundService.Record();
 	}
 
 	private void stopRecording() {
-		/*
-		mRecorder.stop();
-		mRecorder.release();
-		mWakeLock.release();
-		mRecorder = null;
-		 */
 		if (mIsBound) {
 			mFileName = ((RecordService) mBoundService).mFileName;
 			mBoundService.Stop();
-		}	
-		showEditRecInfoDialog();
+		}
+		startCameraIntent();
 	}
 
 
@@ -385,7 +394,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					actionBar.newTab()
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
-		}	
+		}
 	}
 
 	@Override
