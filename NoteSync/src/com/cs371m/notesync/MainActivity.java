@@ -5,11 +5,15 @@ import java.util.ArrayList;
 import java.util.Locale;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.support.v4.app.Fragment;
@@ -25,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -57,6 +62,53 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	ViewPager mViewPager;
 
+	private RecordService mBoundService;
+	private boolean mIsBound = false;
+
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// This is called when the connection with the service has been
+			// established, giving us the service object we can use to
+			// interact with the service.  Because we have bound to a explicit
+			// service that we know is running in our own process, we can
+			// cast its IBinder to a concrete class and directly access it.
+			mBoundService = ((RecordService.LocalBinder)service).getService();
+
+			// Tell the user about this for our demo.
+			Toast.makeText(mBoundService, "RecordService connected",
+					Toast.LENGTH_SHORT).show();
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			// This is called when the connection with the service has been
+			// unexpectedly disconnected -- that is, its process crashed.
+			// Because it is running in our same process, we should never
+			// see this happen.
+			Toast.makeText(mBoundService, "RecordService disconnected",
+					Toast.LENGTH_SHORT).show();
+			mBoundService = null;
+
+		}
+	};
+
+	void doBindService() {
+		// Establish a connection with the service.  We use an explicit
+		// class name because we want a specific service implementation that
+		// we know will be running in our own process (and thus won't be
+		// supporting component replacement by other applications).
+		boolean ret = bindService(new Intent(this, 
+				RecordService.class), mConnection, Context.BIND_AUTO_CREATE);
+		mIsBound = true;
+	}
+
+	void doUnbindService() {
+		if (mIsBound) {
+			// Detach our existing connection.
+			unbindService(mConnection);
+			mIsBound = false;
+		}
+	}
+
 	private void onRecord(boolean start) {
 		if (start) {
 			startRecording();
@@ -77,7 +129,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mWakeLock.acquire();
 		mPlayer = new MediaPlayer();
 		try {
-			mPlayer.setDataSource(mFileName);
+			//mPlayer.setDataSource(mFileName);
+			mPlayer.setDataSource(notes.get(0).recording);
 			mPlayer.prepare();
 			mPlayer.start();
 		} catch (IOException e) {
@@ -90,8 +143,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mWakeLock.release();
 		mPlayer = null;
 	}
-	
+
 	private void startRecording() {
+		/*
 		mWakeLock.acquire();
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -120,30 +174,31 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 
 		mRecorder.start();
+		*/
+		if (mIsBound)
+			mBoundService.Record();
 	}
 
 	private void stopRecording() {
+		/*
 		mRecorder.stop();
 		mRecorder.release();
 		mWakeLock.release();
 		mRecorder = null;
+		*/
+		if (mIsBound) {
+			mFileName = ((RecordService) mBoundService).mFileName;
+			Note tempNote = new Note();
+			tempNote.recording = mFileName;
+			notes.add(0, tempNote);
+			mBoundService.Stop();
+		}
 	}
 
 	public void onClickStartRec(View v) {
 
 		onRecord(mStartRecording);
-		
-		Note note = new Note();
-        notes.add(note);
-        note.course = "COURSE";
-        note.image = "IMAGE";
-        note.recording = "RECORDING";
-        note.topic = "TOPIC";
-        note.timestamps = new ArrayList<Integer>();
-        note.timestamps.add(5);
-        note.bookmarks = new ArrayList<Point>();
-        note.bookmarks.add(new Point(1,1));
-        
+
 		if (mStartRecording) {
 			mRecordButton=(Button) findViewById(R.id.mRecordButton);
 			mRecordButton.setText(R.string.stopRecord);
@@ -171,7 +226,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
-		mStartRecording=true;
+		mStartRecording = true;
 		mStartPlaying = true;
 		//FIXME: doesn't work b/c fragment not visible
 		//mRecordButton=(Button) findViewById(R.id.mRecordButton);
@@ -188,7 +243,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
-		
+
 		mWakeLock = ((PowerManager)this.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "recordlock");
 
 		// When swiping between different sections, select the corresponding
@@ -323,6 +378,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	@Override
 	protected void onResume() {
 		super.onResume();
+		doBindService();
 		if (mWakeLock == null) {
 			mWakeLock = ((PowerManager)this.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "recordlock");
 		}
@@ -334,10 +390,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			notes = new ArrayList<Note>();
 		}
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
+		//doUnbindService();
 		if (mRecorder != null) {
 			mRecorder.release();
 			mRecorder = null;
@@ -354,10 +411,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
+		//doUnbindService();
 		try {
 			Helper.writeNotes(notes, false, this.getApplicationContext());
 		} catch (Exception e) {
@@ -365,10 +423,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		//doUnbindService();
 		try {
 			Helper.writeNotes(notes, false, this.getApplicationContext());
 		} catch (Exception e) {
