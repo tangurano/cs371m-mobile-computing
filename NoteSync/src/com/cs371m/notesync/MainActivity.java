@@ -57,12 +57,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private RecordService mBoundService;
 	private boolean mIsBound = false;
 	protected static ArrayList<Note> notes;
+	protected static ArrayList<Integer> tempTimestamps;
 	//0: Title 1: Class Name 2: Tag(s)
 	//Create enumeration class of the 3 types above
 	protected static EditText [] txtInputVals= new EditText[3];
 	protected static String [] inputVals= new String[3];
-	Time time = new Time();
+	static Time time = new Time();
 	private static boolean clickedOk=false; 
+	private static boolean isRecording=false;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -81,7 +83,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	public static final int MEDIA_TYPE_IMAGE = 1;
 
-	private Uri fileUri;
+	private static Uri fileUri;
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -189,9 +191,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 
 	private void onRecord(boolean start) {
-		if (start) {
+		if (start) 
+		{
+			isRecording=true;
 			startRecording();
-		} else {
+		} else 
+		{
+			isRecording=false;
 			stopRecording();
 		}
 	}
@@ -218,13 +224,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
-	private void stopPlaying() {
+	private void stopPlaying() 
+	{
 		mPlayer.release();
 		mWakeLock.release();
 		mPlayer = null;
 	}
 
-	private void startRecording() {
+	private void startRecording() 
+	{
 		if (mIsBound)
 			mBoundService.Record();
 	}
@@ -238,6 +246,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 
 
+	
 	public static class EditRecInfoDialogFragment extends DialogFragment 
 	{
 		public interface EditRecInfoDialogListener 
@@ -267,11 +276,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		 */
 		public Dialog onCreateDialog(Bundle savedInstanceState) 
 		{
-
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity ());
 			// Get the layout inflater
 			LayoutInflater inflater = getActivity ().getLayoutInflater();
-			View diag_view = inflater.inflate(R.layout.edit_title_dialog, null);
 			//DialogInterface onClickInterface=new DialogInterface.OnClickListener();
 			// Inflate and set the layout for the dialog
 			// Pass null as the parent view because its going in the dialog layout
@@ -293,8 +300,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 				}
 
-			}
-					)
+			})
 					.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							//Give default name
@@ -303,6 +309,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					}); 
 			//Return the created dialogue box
 			return builder.create();
+
 		}
 
 		@Override
@@ -317,7 +324,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				Note perNote= new Note();
 				perNote.topic=inputVals[0];
 				perNote.course=inputVals[1];
+				//Update timeStamp
+				
+				//Debug
+				perNote.timestamps=tempTimestamps;
+				perNote.recording = mFileName;
+				perNote.image = fileUri.getPath();
+				//Rest temparray list
 				notes.add(perNote);
+				tempTimestamps=new ArrayList<Integer>();
 			}
 			clickedOk=false;
 		}
@@ -347,6 +362,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mPlayButton.setText(R.string.startPlaying);
 		}
 		mStartPlaying = !mStartPlaying;
+	}
+
+	public void onClickMakeTag(View v)
+	{
+
+		//Get current timestamp
+		if (isRecording)
+		{
+			time.setToNow();
+			Long currTimel=time.toMillis(false);
+			int currTime=Integer.valueOf(currTimel.intValue());
+			//add to temp arrayList of timestamps
+			tempTimestamps.add(currTime);
+		}
 	}
 
 	@Override
@@ -512,10 +541,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		try {
 			notes = Helper.loadNotes(this.getApplicationContext());
+			tempTimestamps= new ArrayList<Integer>();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			notes = new ArrayList<Note>();
+			
 		}
 	}
 

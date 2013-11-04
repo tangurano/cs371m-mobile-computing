@@ -9,8 +9,10 @@
  	<string name="stopRecord">Stop Recording</string>
  	<string name="startPlaying">Start Playing</string>
  	<string name="stopPlaying">Stop Playing</string>
+ 	<string name="makeTag">Tag Moment</string>
  	<string name="addTitle">Recording Title</string>
  	<string name="addClass">Class Name</string>
+ 	
  	<string name="addTag">Tag(s)</string>
  	<string name="done">Done</string>
  	<string name="cancel">Cancel</string>
