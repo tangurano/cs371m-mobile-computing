@@ -1,13 +1,16 @@
 package com.cs371m.notesync;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -16,6 +19,7 @@ import org.xmlpull.v1.XmlSerializer;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.util.Xml;
@@ -23,44 +27,46 @@ import android.util.Xml;
 public class Helper {
 	
 	private static String filename = "NoteSyncNotes.xml";
-/*
-	public static ArrayList<Note> loadNotes(Context c) throws Exception {
-		FileInputStream fis = c.openFileInput(filename);
-		ObjectInputStream is = new ObjectInputStream(fis);
-		ArrayList<Note> notes = (ArrayList<Note>) is.readObject();
-		is.close();
-		return notes;
+	public static final int MEDIA_TYPE_IMAGE = 1;
+	public static final int MEDIA_TYPE_AUDIO = 2;
+	
+	public static Uri getOutputMediaFileUri(int type, Context c){
+	      return Uri.fromFile(getOutputMediaFile(type, c));
+	}
+
+	
+	public static File getOutputMediaFile(int type, Context c){
+	    // To be safe, you should check that the SDCard is mounted
+	    // using Environment.getExternalStorageState() before doing this.
+
+	    File mediaStorageDir = new File(c.getApplicationContext().getFilesDir().getAbsolutePath());
+	    // This location works best if you want the created images to be shared
+	    // between applications and persist after your app has been uninstalled.
+
+	    // Create the storage directory if it does not exist
+	    if (! mediaStorageDir.exists()){
+	        if (! mediaStorageDir.mkdirs()){
+	            Log.d("MyCameraApp", "failed to create directory");
+	            return null;
+	        }
+	    }
+
+	    // Create a media file name
+	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	    File mediaFile;
+	    if (type == MEDIA_TYPE_IMAGE){
+	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+	        "IMG_"+ timeStamp + ".jpg");
+	    } else if(type == MEDIA_TYPE_AUDIO) {
+	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+	        "VID_"+ timeStamp + ".3gp");
+	    } else {
+	        return null;
+	    }
+
+	    return mediaFile;
 	}
 	
-	public static void serializeNotes(ArrayList<Note> notes, Context c) throws Exception {
-		 FileOutputStream fos = c.openFileOutput(filename,Context.MODE_PRIVATE);
-		 ObjectOutputStream os = new ObjectOutputStream(fos);
-		 os.writeObject(notes);
-		 os.close();
-	}
-    Test for loadNotes and writeNotes 
-        ArrayList<Note> notes = new ArrayList<Note>();
-        ArrayList<Note> notesCopy = new ArrayList<Note>();
-        Note note = new Note();
-        notes.add(note);
-        note.course = "COURSE";
-        note.image = "IMAGE";
-        note.recording = "RECORDING";
-        note.topic = "TOPIC";
-        note.timestamps = new ArrayList<Integer>();
-        note.timestamps.add(5);
-        note.bookmarks = new ArrayList<Point>();
-        note.bookmarks.add(new Point(1,1));
-
-
-        try {
-			Helper.writeNotes(notes, getApplicationContext());
-			notesCopy = Helper.loadNotes(getApplicationContext());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-	*/
 	public static ArrayList<Note> loadNotes(Context c) throws XmlPullParserException, IOException
 	{
 		boolean mExternalStorageAvailable = false;

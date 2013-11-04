@@ -23,4 +23,15 @@
         android:text="@string/startPlaying"
         android:textSize="20sp" />
 
+      <Button
+          android:id="@+id/mTagButton"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentLeft="true"
+          android:layout_below="@+id/mRecordButton"
+          android:layout_marginTop="21dp"
+          android:onClick="onClickMakeTag"
+          android:text="@string/makeTag"
+          android:textSize="20sp" />
+
 </RelativeLayout>
