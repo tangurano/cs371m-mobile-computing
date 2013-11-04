@@ -242,11 +242,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// Return a DummySectionFragment (defined as a static inner class
 			// below) with the page number as its lone argument.
 			switch(position) {
-			case 0:
+			case 0: 
 				return new RecordViewFragment();
-			case 1:
+			case 1: //FIXME: also called on init? never called on button press...
 				return new NotesViewFragment();
-			default:
+			case 2: //FIXME: called on middle view for some reason.., seamlessly transitions to third screen...?
+				Fragment frag = new StudyViewFragment();
+				Bundle bundle = new Bundle();
+				//TODO: supply a valid Note to it for image and recording filepaths
+				//filepaths implicitly start in the /NoteSync/ folder?
+				bundle.putString(StudyViewFragment.ARG_IMAGE_PATH, "/123.jpg"); //no img/ if getDir
+				bundle.putString(StudyViewFragment.ARG_RECORDING_PATH, "/test.mp3");
+				frag.setArguments(bundle); //FIXME: bundle always null in studyviewfragment...?
+				return frag;
+			default: //should never be called
 				Fragment fragment = new DummySectionFragment();
 				Bundle args = new Bundle();
 				args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
