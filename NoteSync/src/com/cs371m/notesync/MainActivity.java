@@ -189,7 +189,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity ());
 			    // Get the layout inflater
 			    LayoutInflater inflater = getActivity ().getLayoutInflater();
-			    View diag_view = inflater.inflate(R.layout.edit_title_dialog, null);
 			    //DialogInterface onClickInterface=new DialogInterface.OnClickListener();
 			    // Inflate and set the layout for the dialog
 			    // Pass null as the parent view because its going in the dialog layout

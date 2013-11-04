@@ -9,12 +9,12 @@
  	<string name="stopRecord">Stop Recording</string>
  	<string name="startPlaying">Start Playing</string>
  	<string name="stopPlaying">Stop Playing</string>
-<<<<<<< HEAD
+ 	<string name="makeTag">Tag Moment</string>
  	<string name="addTitle">Recording Title</string>
  	<string name="addClass">Class Name</string>
+ 	
  	<string name="addTag">Tag(s)</string>
  	<string name="done">Done</string>
  	<string name="cancel">Cancel</string>
-=======
->>>>>>> 48c87b197e8c6599b764a22e546a3719f286467a
+
 </resources>
