@@ -60,6 +60,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static String [] inputVals= new String[3];
 	static Time time = new Time();
 	private static boolean clickedOk=false; 
+	private static boolean isRecording=false;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -142,9 +143,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 
 	private void onRecord(boolean start) {
-		if (start) {
+		if (start) 
+		{
+			isRecording=true;
 			startRecording();
-		} else {
+		} else 
+		{
+			isRecording=false;
 			stopRecording();
 		}
 	}
@@ -176,58 +181,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mPlayer.release();
 		mWakeLock.release();
 		mPlayer = null;
-
-		//Prompt for edit dialog
-
 	}
 
-	private void startRecording() {
-		/*
-		mWakeLock.acquire();
-		mRecorder = new MediaRecorder();
-		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-		//Retrieve and set time stamp 
-		time.setToNow();
-		startRecTime=Long.toString(time.toMillis(false)); //ignore DST?
-		//Setting the audio file save path
-		//mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-
-		mFileName = this.getApplicationContext().getFilesDir().getAbsolutePath();
-		//mFileName = this.getApplicationContext().getFilesDir().getAbsolutePath();
-		//File f = this.getApplicationContext().openFileOutput(name, mode).getFilesDir();
-		//mFileName += "/NoteSync/rec/"+startRecTime+".3gp";
-		mFileName += "/"+startRecTime+".3gp";
-
-		Log.v(LOG_TAG, "File name created:"+ mFileName+ "\n");
-
-		mRecorder.setOutputFile(mFileName);
-		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-		try {
-			mRecorder.prepare();
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "prepare() failed: " + e.getMessage());
-		}
-
-		mRecorder.start();
-		 */
+	private void startRecording() 
+	{
 		if (mIsBound)
 			mBoundService.Record();
 	}
 
-	private void stopRecording() {
-		/*
-		mRecorder.stop();
-		mRecorder.release();
-		mWakeLock.release();
-		mRecorder = null;
-		 */
+	private void stopRecording()
+	{
 		if (mIsBound) {
 			mFileName = ((RecordService) mBoundService).mFileName;
 			mBoundService.Stop();
 		}	
 		showEditRecInfoDialog();
+		
 	}
 
 
@@ -351,11 +320,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	{
 
 		//Get current timestamp
-		time.setToNow();
-		Long currTimel=time.toMillis(false);
-		int currTime=Integer.valueOf(currTimel.intValue());
-		//add to temp arrayList of timestamps
-		tempTimestamps.add(currTime);
+		if (isRecording)
+		{
+			time.setToNow();
+			Long currTimel=time.toMillis(false);
+			int currTime=Integer.valueOf(currTimel.intValue());
+			//add to temp arrayList of timestamps
+			tempTimestamps.add(currTime);
+		}
 	}
 
 	@Override
