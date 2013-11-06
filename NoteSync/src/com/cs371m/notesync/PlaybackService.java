@@ -2,6 +2,7 @@ package com.cs371m.notesync;
 
 import java.io.IOException;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class PlaybackService extends Service{
@@ -21,7 +23,7 @@ public class PlaybackService extends Service{
 	private WakeLock mLock;
 	Time time = new Time();
 	public String mFileName;
-	private boolean isRunning = false;
+	private boolean isPaused = false;
 
 	/**
 	 * Class for clients to access.  Because we know this service always
@@ -54,8 +56,9 @@ public class PlaybackService extends Service{
 	public void onCreate() {
 		Toast.makeText(this, "My Service Created", Toast.LENGTH_LONG).show();
 		Log.d(TAG, "onCreate");
+		
+		mPlayer = null;
 
-		mPlayer = new MediaPlayer();
 		mLock = ((PowerManager)this.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "playlock");
 	}
 
@@ -71,19 +74,31 @@ public class PlaybackService extends Service{
 			mLock.release();
 		}
 		mPlayer = null;
-		isRunning = false;
 
 	}
 
 	public void Stop() {
-		if (isRunning) {
+		if (mPlayer!= null && mPlayer.isPlaying()) {
 			Toast.makeText(this, "Stopped Playing", Toast.LENGTH_LONG).show();
-			Log.d(TAG, "onDestroy");
 			mPlayer.stop();
 			mPlayer.release();
 			mLock.release();
 			mPlayer = null;
-			isRunning = false;
+			isPaused = false;
+		}
+	}
+
+	public void Pause() {
+		if (mPlayer!= null && mPlayer.isPlaying()) {
+			Toast.makeText(this, "Pausing", Toast.LENGTH_LONG).show();
+			mPlayer.pause();
+			isPaused = true;
+		}
+	}
+
+	public void Seek(int ms) {
+		if (mPlayer != null) {
+			mPlayer.seekTo(ms);
 		}
 	}
 
@@ -91,14 +106,23 @@ public class PlaybackService extends Service{
 		//if (activity.mCurrentNote.recording != null && mediaPlayer == null)
 		//	playRecording(activity.mCurrentNote.recording, rootView.getContext());
 		//TODO: even if running, overwrite by playing again from start
-		if (!isRunning) {
-			isRunning = true;
-
+		if (isPaused) {
+			isPaused = false;
+			Toast.makeText(this, "Resume Playing", Toast.LENGTH_LONG).show();
+			if (mPlayer != null)
+				mPlayer.start();
+		} else if (mPlayer == null) {
 			Toast.makeText(this, "Started Playing", Toast.LENGTH_LONG).show();
 			Log.d(TAG, "onStart");
 			mLock.acquire();
 			mPlayer = new MediaPlayer();
-
+			mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			    public void onCompletion(MediaPlayer mp) {
+			        //TESTME: Not sure if I should destroy the service or not
+			    	Stop();
+			    }
+			});
+			
 			try {
 				mPlayer.setDataSource(path);
 				mPlayer.prepare();
@@ -111,7 +135,9 @@ public class PlaybackService extends Service{
 			Log.v(TAG, "ALREADY RUNNING");
 		}
 	}
-	
+
+
+
 	/*
 	 * private void playRecording(String path, Context c) {
 		File f = new File(path);
@@ -119,7 +145,7 @@ public class PlaybackService extends Service{
 			Log.e(STUDY_VIEW_LOG_TAG, "Failed to find recording file at path: " + path);
 		else {
 			Uri myUri = Uri.fromFile(f); // initialize Uri here
-    		
+
 			mediaPlayer = new MediaPlayer();
 	        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 	        try {
@@ -131,7 +157,7 @@ public class PlaybackService extends Service{
 				Log.e(STUDY_VIEW_LOG_TAG, e.getMessage());
 			}
 	        mediaPlayer.start();
-			
+
 		}
     }
 	 */
