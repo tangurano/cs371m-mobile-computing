@@ -290,57 +290,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mIsPlayBound = false;
 		}
 	}
-
-	private void onPlay(boolean start) {
-		if (start) {
-			startPlaying();
-		} else {
-			stopPlaying();
-		}
-	}
-
-	private void startPlaying() {
-		/*
-		mWakeLock.acquire();
-		mPlayer = new MediaPlayer();
-		try {
-			if (mCurrentNote != null && mCurrentNote.recording != null) {
-				mPlayer.setDataSource(mCurrentNote.recording);
-				mPlayer.prepare();
-				mPlayer.start();
-			}
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "prepare() failed");
-		}
-		*/
-		if (mIsPlayBound && mCurrentNote != null && mCurrentNote.recording != null) {
-			mBoundPlayService.Play(mCurrentNote.recording);
-		}
-	}
-
-	private void stopPlaying() 
-	{
-		/*
-		mPlayer.release();
-		mWakeLock.release();
-		mPlayer = null;
-		*/
-		if (mIsPlayBound) {
-			mBoundPlayService.Stop();
-		}
-		
-	}
-
+	
 	public void onClickStartPlay(View v) 
 	{
-		onPlay(mStartPlaying);
-		// notes = new ArrayList<Note>();
 		if (mStartPlaying) {
+			if (mIsPlayBound && mCurrentNote != null && mCurrentNote.recording != null) {
+				mBoundPlayService.Play(mCurrentNote.recording);
+			}
 			mPlayButton=(Button) findViewById(R.id.mPlayButton);
 			mPlayButton.setText(R.string.stopPlaying);
-		} else {
+		} else { 
+			if (mIsPlayBound) {
+				mBoundPlayService.Stop();
+			}
 			mPlayButton.setText(R.string.startPlaying);
 		}
+		
 		mStartPlaying = !mStartPlaying;
 	}
 	

@@ -2,6 +2,7 @@ package com.cs371m.notesync;
 
 import java.io.IOException;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class PlaybackService extends Service{
@@ -114,7 +116,13 @@ public class PlaybackService extends Service{
 			Log.d(TAG, "onStart");
 			mLock.acquire();
 			mPlayer = new MediaPlayer();
-
+			mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			    public void onCompletion(MediaPlayer mp) {
+			        //TESTME: Not sure if I should destroy the service or not
+			    	Stop();
+			    }
+			});
+			
 			try {
 				mPlayer.setDataSource(path);
 				mPlayer.prepare();
