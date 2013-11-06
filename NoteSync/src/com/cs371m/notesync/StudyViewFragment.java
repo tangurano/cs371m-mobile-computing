@@ -12,7 +12,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -36,7 +38,8 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
     
     MainActivity activity; //always null?
     
-    public StudyViewFragment() {
+    public StudyViewFragment() 
+    {
     	
     }
 
@@ -69,6 +72,27 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 		//TODO: add controls
 		MediaController mc = (MediaController) rootView.findViewById(R.id.mediaController);
 		
+		//Add Long press gesture for annotation 
+		final GestureDetector gesture = new GestureDetector(
+				getActivity(),  new GestureDetector.SimpleOnGestureListener() 
+				{
+
+	                @Override
+	                public boolean onDown(MotionEvent e) 
+	                {
+	                    return true;
+	                }
+	                
+					@Override
+					public void onLongPress (MotionEvent e)
+					{
+						//Retrieve coords
+						float xCoord=e.getX();
+						float yCoord=e.getY();
+						
+					}
+					
+				});
 		return rootView;
     }
     
