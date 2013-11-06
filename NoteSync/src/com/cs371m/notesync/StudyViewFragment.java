@@ -60,8 +60,9 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 				image.setImageResource(R.drawable.ic_launcher); //TODO: use NoteSync logo
 			
 			//TODO: test playback unaffected when returning to view
-			if (activity.mCurrentNote.recording != null && mediaPlayer == null)
-				playRecording(activity.mCurrentNote.recording, rootView.getContext());
+			//MOVED TO SERVICE code
+			//if (activity.mCurrentNote.recording != null && mediaPlayer == null)
+			//	playRecording(activity.mCurrentNote.recording, rootView.getContext());
 		} else
 			image.setImageResource(R.drawable.ic_launcher); //TODO: use NoteSync logo
 		
@@ -89,27 +90,6 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
     	}
     }
     
-    private void playRecording(String path, Context c) {
-		File f = new File(path);
-		if (!f.exists()) 
-			Log.e(STUDY_VIEW_LOG_TAG, "Failed to find recording file at path: " + path);
-		else {
-			Uri myUri = Uri.fromFile(f); // initialize Uri here
-    		
-			mediaPlayer = new MediaPlayer();
-	        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-	        try {
-				mediaPlayer.setDataSource(c, myUri);
-				mediaPlayer.prepare(); //FIXME: async won't work
-			} catch (IOException e) { //TODO: handle other exceptions
-				Log.e(STUDY_VIEW_LOG_TAG, e.getMessage());
-			} catch (IllegalArgumentException e) {
-				Log.e(STUDY_VIEW_LOG_TAG, e.getMessage());
-			}
-	        mediaPlayer.start();
-			
-		}
-    }
     /*//causes failure to play
     public void onPrepared(MediaPlayer player) {
         player.start();

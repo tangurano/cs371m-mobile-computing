@@ -68,6 +68,12 @@ public class NotesViewFragment extends ListFragment{
 	        	Toast.makeText(getActivity().getApplicationContext(), "New Note Selected",
 						Toast.LENGTH_SHORT).show(); //debug
 	        	
+	        	//TODO: re-create the StudyView, thus displaying a new image 
+	        	
+	        	
+	        	//TODO: tell the background PlayBackService to play here, instead of on view creation
+	        	activity.mBoundPlayService.Play();
+	        	
 	        	/*//Failed attempt to navigate to StudyView
 	        	//go to the study view using a fragment transaction
 	        	FragmentManager fragmentManager = getFragmentManager();
