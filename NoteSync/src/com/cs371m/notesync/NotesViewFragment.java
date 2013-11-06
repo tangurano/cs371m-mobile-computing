@@ -3,12 +3,12 @@ package com.cs371m.notesync;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 public class NotesViewFragment extends ListFragment{
 	/**
@@ -36,6 +36,12 @@ public class NotesViewFragment extends ListFragment{
 		// Attach the adapter to a ListView
 		this.setListAdapter(adapter);
 		return rootView;
+	}
+	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		 Note note = (Note) getListView().getItemAtPosition(position);
+		 ((MainActivity) getActivity()).mViewPager.setCurrentItem(2);
 	}
 	
 	@Override
