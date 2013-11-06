@@ -32,6 +32,8 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
     public static final String ARG_RECORDING_PATH = "recording_path";
     public static final String STUDY_VIEW_LOG_TAG = "StudyViewFragment";
     
+    public ImageView image;
+    
     public MediaPlayer mediaPlayer; //to prevent replaying TODO: move to service
     
     MainActivity activity; //always null?
@@ -45,14 +47,23 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
     	View rootView = inflater.inflate(R.layout.fragment_study_view, container, false);
-        ImageView image = (ImageView) rootView.findViewById(R.id.imgDisplay);
+        image = (ImageView) rootView.findViewById(R.id.imgDisplay);
         //? arguments Bundle vs savedInstanceState? vs using mainActivity state?
         	//external useful for testing
 		//String externalDirectory = rootView.getContext().getExternalFilesDir(null).getAbsolutePath(); //storage/sdcard0/Android/data/com.cs371m.notesync/files
 		//String appDirectory = c.getFilesDir().getAbsolutePath(); //getPath? //getFilesDir gives hidden internal directory /data/data
 		//String imgDirectory = c.getDir("img", Context.MODE_PRIVATE).getAbsolutePath(); //app_img
 		
-		activity = (MainActivity) getActivity(); //re-init here?
+		updateStudyView();
+		
+		//TODO: add controls
+		MediaController mc = (MediaController) rootView.findViewById(R.id.mediaController);
+		
+		return rootView;
+    }
+    
+    public void updateStudyView() {
+    	activity = (MainActivity) getActivity(); //re-init here?
 		if (activity.mCurrentNote != null ) {
 			if (activity.mCurrentNote.image != null)
 				drawImage(activity.mCurrentNote.image, image); //TODO: add pinch-zoom ///data/data/com.cs371m.notesync/files/IMG_20131104_102808.jpg
@@ -65,13 +76,7 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 			//	playRecording(activity.mCurrentNote.recording, rootView.getContext());
 		} else
 			image.setImageResource(R.drawable.ic_launcher); //TODO: use NoteSync logo
-		
-		//TODO: add controls
-		MediaController mc = (MediaController) rootView.findViewById(R.id.mediaController);
-		
-		return rootView;
     }
-    
     
     
     private void drawImage(String path, ImageView image) {
