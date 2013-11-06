@@ -1,11 +1,9 @@
 package com.cs371m.notesync;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -15,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.DialogInterface;
-import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -50,14 +47,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	private Button   mPlayButton = null;
 	private MediaPlayer   mPlayer = null;
-	private String startRecTime=null;
+	private Long startRecTime=null;
 	boolean mStartRecording, mStartPlaying;
 
 	private WakeLock mWakeLock;
-	private RecordService mBoundService;
-	private boolean mIsBound = false;
+	private RecordService mBoundRecService;
+	PlaybackService mBoundPlayService;
+	private boolean mIsRecBound = false;
+	private boolean mIsPlayBound = false;
 	protected static ArrayList<Note> notes;
-	protected static ArrayList<Integer> tempTimestamps;
+	Note mCurrentNote;
+	protected static ArrayList<Long> tempTimestamps;
 	//0: Title 1: Class Name 2: Tag(s)
 	//Create enumeration class of the 3 types above
 	protected static EditText [] txtInputVals= new EditText[3];
@@ -130,53 +130,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		DialogFragment dialog = new EditRecInfoDialogFragment();
 		dialog.show(getFragmentManager(), "Edit Title Fragment");
 	}
-
-
-	private ServiceConnection mConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			// This is called when the connection with the service has been
-			// established, giving us the service object we can use to
-			// interact with the service.  Because we have bound to a explicit
-			// service that we know is running in our own process, we can
-			// cast its IBinder to a concrete class and directly access it.
-			mBoundService = ((RecordService.LocalBinder)service).getService();
-
-			// Tell the user about this for our demo.
-			Toast.makeText(mBoundService, "RecordService connected",
-					Toast.LENGTH_SHORT).show();
-		}
-
-		public void onServiceDisconnected(ComponentName className) {
-			// This is called when the connection with the service has been
-			// unexpectedly disconnected -- that is, its process crashed.
-			// Because it is running in our same process, we should never
-			// see this happen.
-			Toast.makeText(mBoundService, "RecordService disconnected",
-					Toast.LENGTH_SHORT).show();
-			mBoundService = null;
-
-		}
-	};
-
-	void doBindService() {
-		// Establish a connection with the service.  We use an explicit
-		// class name because we want a specific service implementation that
-		// we know will be running in our own process (and thus won't be
-		// supporting component replacement by other applications).
-		boolean ret = bindService(new Intent(this, 
-				RecordService.class), mConnection, Context.BIND_AUTO_CREATE);
-		mIsBound = true;
-	}
-
-	void doUnbindService() {
-		if (mIsBound) {
-			// Detach our existing connection.
-			unbindService(mConnection);
-			mIsBound = false;
-		}
-	}
-
-
+	
 	// The dialog fragment receives a reference to this Activity through the
 	// Fragment.onAttach() callback, which it uses to call the following methods
 	// defined by the NoticeDialogFragment.NoticeDialogListener interface
@@ -190,6 +144,52 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		Log.v(LOG_TAG, "clicked on neg");
 	}
 
+	/*  RecordService  */
+
+	private ServiceConnection mRecConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// This is called when the connection with the service has been
+			// established, giving us the service object we can use to
+			// interact with the service.  Because we have bound to a explicit
+			// service that we know is running in our own process, we can
+			// cast its IBinder to a concrete class and directly access it.
+			mBoundRecService = ((RecordService.LocalBinder)service).getService();
+
+			// Tell the user about this for our demo.
+			Toast.makeText(mBoundRecService, "RecordService connected",
+					Toast.LENGTH_SHORT).show();
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			// This is called when the connection with the service has been
+			// unexpectedly disconnected -- that is, its process crashed.
+			// Because it is running in our same process, we should never
+			// see this happen.
+			Toast.makeText(mBoundRecService, "RecordService disconnected",
+					Toast.LENGTH_SHORT).show();
+			mBoundRecService = null;
+
+		}
+	};
+
+	void doBindRecService() {
+		// Establish a connection with the service.  We use an explicit
+		// class name because we want a specific service implementation that
+		// we know will be running in our own process (and thus won't be
+		// supporting component replacement by other applications).
+		boolean ret = bindService(new Intent(this, 
+				RecordService.class), mRecConnection, Context.BIND_AUTO_CREATE);
+		mIsRecBound = true;
+	}
+
+	void doUnbindRecService() {
+		if (mIsRecBound) {
+			// Detach our existing connection.
+			unbindService(mRecConnection);
+			mIsRecBound = false;
+		}
+	}
+
 	private void onRecord(boolean start) {
 		if (start) 
 		{
@@ -199,6 +199,95 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		{
 			isRecording=false;
 			stopRecording();
+		}
+	}
+
+	private void startRecording() 
+	{
+		if (mIsRecBound) {
+			time.setToNow();
+			startRecTime = time.toMillis(false);
+			mBoundRecService.Record();
+		}
+	}
+
+	private void stopRecording() {
+		if (mIsRecBound) {
+			mFileName = ((RecordService) mBoundRecService).mFileName;
+			mBoundRecService.Stop();
+		}
+		startCameraIntent();
+	}
+
+	public void onClickStartRec(View v) {
+		onRecord(mStartRecording);
+
+		if (mStartRecording) {
+			mRecordButton=(Button) findViewById(R.id.mRecordButton);
+			mRecordButton.setText(R.string.stopRecord);
+		} else {
+			mRecordButton.setText(R.string.startRecord);
+		}
+		mStartRecording = !mStartRecording;
+	}
+
+	public void onClickMakeTag(View v)
+	{
+
+		//Get time since start of recording
+		if (isRecording)
+		{
+			time.setToNow();
+			Long currTime=time.toMillis(false);
+			Long offset = currTime - startRecTime;
+			//add to temp arrayList of timestamps
+			tempTimestamps.add(offset);
+		}
+	}
+	
+	/*  PlaybackService  */
+
+	private ServiceConnection mPlayConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// This is called when the connection with the service has been
+			// established, giving us the service object we can use to
+			// interact with the service.  Because we have bound to a explicit
+			// service that we know is running in our own process, we can
+			// cast its IBinder to a concrete class and directly access it.
+			mBoundPlayService = ((PlaybackService.LocalBinder)service).getService();
+
+			// Tell the user about this for our demo.
+			Toast.makeText(mBoundPlayService, "PlaybackService connected",
+					Toast.LENGTH_SHORT).show();
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			// This is called when the connection with the service has been
+			// unexpectedly disconnected -- that is, its process crashed.
+			// Because it is running in our same process, we should never
+			// see this happen.
+			Toast.makeText(mBoundPlayService, "PlaybackService disconnected",
+					Toast.LENGTH_SHORT).show();
+			mBoundPlayService = null;
+
+		}
+	};
+
+	void doBindPlayService() {
+		// Establish a connection with the service.  We use an explicit
+		// class name because we want a specific service implementation that
+		// we know will be running in our own process (and thus won't be
+		// supporting component replacement by other applications).
+		boolean ret = bindService(new Intent(this, 
+				PlaybackService.class), mPlayConnection, Context.BIND_AUTO_CREATE);
+		mIsPlayBound = true;
+	}
+
+	void doUnbindPlayService() {
+		if (mIsPlayBound) {
+			// Detach our existing connection.
+			unbindService(mPlayConnection);
+			mIsPlayBound = false;
 		}
 	}
 
@@ -231,21 +320,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mPlayer = null;
 	}
 
-	private void startRecording() 
+	public void onClickStartPlay(View v) 
 	{
-		if (mIsBound)
-			mBoundService.Record();
-	}
-
-	private void stopRecording() {
-		if (mIsBound) {
-			mFileName = ((RecordService) mBoundService).mFileName;
-			mBoundService.Stop();
+		onPlay(mStartPlaying);
+		// notes = new ArrayList<Note>();
+		if (mStartPlaying) {
+			mPlayButton=(Button) findViewById(R.id.mPlayButton);
+			mPlayButton.setText(R.string.stopPlaying);
+		} else {
+			mPlayButton.setText(R.string.startPlaying);
 		}
-		startCameraIntent();
+		mStartPlaying = !mStartPlaying;
 	}
-
-
+	
+	/* Dialog */
 	
 	public static class EditRecInfoDialogFragment extends DialogFragment 
 	{
@@ -332,51 +420,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				perNote.image = fileUri.getPath();
 				//Rest temparray list
 				notes.add(perNote);
-				tempTimestamps=new ArrayList<Integer>();
+				tempTimestamps=new ArrayList<Long>();
 			}
 			clickedOk=false;
 		}
 
 	}
 
-	public void onClickStartRec(View v) {
-		onRecord(mStartRecording);
-
-		if (mStartRecording) {
-			mRecordButton=(Button) findViewById(R.id.mRecordButton);
-			mRecordButton.setText(R.string.stopRecord);
-		} else {
-			mRecordButton.setText(R.string.startRecord);
-		}
-		mStartRecording = !mStartRecording;
-	}
-
-	public void onClickStartPlay(View v) 
-	{
-		onPlay(mStartPlaying);
-		// notes = new ArrayList<Note>();
-		if (mStartPlaying) {
-			mPlayButton=(Button) findViewById(R.id.mPlayButton);
-			mPlayButton.setText(R.string.stopPlaying);
-		} else {
-			mPlayButton.setText(R.string.startPlaying);
-		}
-		mStartPlaying = !mStartPlaying;
-	}
-
-	public void onClickMakeTag(View v)
-	{
-
-		//Get current timestamp
-		if (isRecording)
-		{
-			time.setToNow();
-			Long currTimel=time.toMillis(false);
-			int currTime=Integer.valueOf(currTimel.intValue());
-			//add to temp arrayList of timestamps
-			tempTimestamps.add(currTime);
-		}
-	}
+	/* Other MainActivity stuff */
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -477,14 +528,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			case 1: //FIXME: also called on init? never called on button press...
 				return new NotesViewFragment();
 			case 2: //FIXME: called on middle view for some reason.., seamlessly transitions to third screen...?
-				Fragment frag = new StudyViewFragment();
-				Bundle bundle = new Bundle();
-				//TODO: supply a valid Note to it for image and recording filepaths
-				//filepaths implicitly start in the /NoteSync/ folder?
-				bundle.putString(StudyViewFragment.ARG_IMAGE_PATH, "/123.jpg"); //no img/ if getDir
-				bundle.putString(StudyViewFragment.ARG_RECORDING_PATH, "/test.mp3");
-				frag.setArguments(bundle); //FIXME: bundle always null in studyviewfragment...?
-				return frag;
+				return new StudyViewFragment();
+				//debug bundle
+				//Bundle bundle = new Bundle();
+				//bundle.putString(StudyViewFragment.ARG_IMAGE_PATH, "/123.jpg"); //no img/ if getDir
+				//bundle.putString(StudyViewFragment.ARG_RECORDING_PATH, "/test.mp3");
+				//frag.setArguments(bundle);
+				//return frag;
 			default: //should never be called
 				Fragment fragment = new DummySectionFragment();
 				Bundle args = new Bundle();
@@ -544,13 +594,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	@Override
 	protected void onResume() {
 		super.onResume();
-		doBindService();
+		doBindRecService();
+		doBindPlayService(); //both?
 		if (mWakeLock == null) {
 			mWakeLock = ((PowerManager)this.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "recordlock");
 		}
 		try {
 			notes = Helper.loadNotes(this.getApplicationContext());
-			tempTimestamps= new ArrayList<Integer>();
+			tempTimestamps= new ArrayList<Long>();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

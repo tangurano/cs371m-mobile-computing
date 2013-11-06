@@ -11,7 +11,7 @@ public class Note implements Serializable
 	public String topic;
 	public String image;
 	public String recording;
-	public ArrayList<Integer> timestamps;
+	public ArrayList<Long> timestamps;
 	public ArrayList<Point> bookmarks;
 
 }

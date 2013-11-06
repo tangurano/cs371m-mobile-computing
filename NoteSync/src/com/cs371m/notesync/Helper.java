@@ -39,9 +39,13 @@ public class Helper {
 	    // To be safe, you should check that the SDCard is mounted
 	    // using Environment.getExternalStorageState() before doing this.
 
-	    File mediaStorageDir = new File(c.getApplicationContext().getFilesDir().getAbsolutePath());
-	    // This location works best if you want the created images to be shared
+	    //File mediaStorageDir = new File(c.getApplicationContext().getFilesDir().getAbsolutePath());
+		// This location works best if you want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
+		
+		File mediaStorageDir  = new File(c.getApplicationContext().getExternalFilesDir(null).getAbsolutePath()); 
+			//storage/sdcard0/Android/data/com.cs371m.notesync/files
+			//external seems to work
 
 	    // Create the storage directory if it does not exist
 	    if (! mediaStorageDir.exists()){
@@ -136,9 +140,9 @@ public class Helper {
         		} else if (currentTag.equals("image")) {
         			current.image = xpp.nextText();
         		} else if (currentTag.equals("timestamps")) {
-        			current.timestamps = new ArrayList<Integer>();
+        			current.timestamps = new ArrayList<Long>();
         		} else if (currentTag.equals("timestamp")) {
-        			current.timestamps.add(Integer.parseInt(xpp.nextText()));
+        			current.timestamps.add(Long.parseLong(xpp.nextText()));
         		} else if (currentTag.equals("bookmarks")) {
         			current.bookmarks = new ArrayList<Point>();
         		} else if (currentTag.equals("x")) {
@@ -189,9 +193,9 @@ public class Helper {
 			 }
 			 if (note.timestamps != null) {
 				 xmlSerializer.startTag("", "timestamps");
-				 for (int x : note.timestamps) {
+				 for (long x : note.timestamps) {
 					 xmlSerializer.startTag("", "timestamp");
-					 xmlSerializer.text(Integer.toString(x));
+					 xmlSerializer.text(Long.toString(x));
 					 xmlSerializer.endTag("",  "timestamp");
 				 }
 				 xmlSerializer.endTag("", "timestamps");
