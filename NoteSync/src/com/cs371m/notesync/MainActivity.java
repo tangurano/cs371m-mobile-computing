@@ -300,24 +300,35 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 
 	private void startPlaying() {
+		/*
 		mWakeLock.acquire();
 		mPlayer = new MediaPlayer();
 		try {
-			if (mFileName != null) {
-				mPlayer.setDataSource(mFileName);
+			if (mCurrentNote != null && mCurrentNote.recording != null) {
+				mPlayer.setDataSource(mCurrentNote.recording);
 				mPlayer.prepare();
 				mPlayer.start();
 			}
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "prepare() failed");
 		}
+		*/
+		if (mIsPlayBound && mCurrentNote != null && mCurrentNote.recording != null) {
+			mBoundPlayService.Play(mCurrentNote.recording);
+		}
 	}
 
 	private void stopPlaying() 
 	{
+		/*
 		mPlayer.release();
 		mWakeLock.release();
 		mPlayer = null;
+		*/
+		if (mIsPlayBound) {
+			mBoundPlayService.Stop();
+		}
+		
 	}
 
 	public void onClickStartPlay(View v) 
@@ -495,6 +506,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				NotesViewFragment frag = (NotesViewFragment) adapter.instantiateItem(mViewPager, 1);
 				if (frag != null)
 					frag.updateList();
+			}
+		} else if (tab.getPosition() == 2) {
+			FragmentPagerAdapter adapter = (FragmentPagerAdapter) mViewPager.getAdapter();
+			if (adapter != null) {
+				StudyViewFragment frag = (StudyViewFragment) adapter.instantiateItem(mViewPager, 2);
+				if (frag != null)
+					frag.updateStudyView();
 			}
 		}
 	}

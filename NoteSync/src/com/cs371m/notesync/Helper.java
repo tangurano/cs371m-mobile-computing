@@ -18,7 +18,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
 import android.content.Context;
-import android.graphics.Point;
+
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -121,8 +121,8 @@ public class Helper {
         xpp.setInput(new StringReader(result));
         int eventType = xpp.getEventType();
         Note current = new Note();
-        int currx = 0;
-        int curry = 0;
+        float currx = 0;
+        float curry = 0;
         while (eventType != XmlPullParser.END_DOCUMENT) {
 //        	if(eventType == XmlPullParser.START_DOCUMENT) {
 //        		System.out.println("Start document");
@@ -146,9 +146,9 @@ public class Helper {
         		} else if (currentTag.equals("bookmarks")) {
         			current.bookmarks = new ArrayList<Point>();
         		} else if (currentTag.equals("x")) {
-        			currx = Integer.parseInt(xpp.nextText());
+        			currx = Float.parseFloat(xpp.nextText());
         		} else if (currentTag.equals("y")) {
-        			curry = Integer.parseInt(xpp.nextText());
+        			curry = Float.parseFloat(xpp.nextText());
         			current.bookmarks.add(new Point(currx, curry));
         		}
         	}
@@ -205,10 +205,10 @@ public class Helper {
 				 for (Point p : note.bookmarks) {
 					 xmlSerializer.startTag("", "bookmark");
 					 xmlSerializer.startTag("", "x");
-					 xmlSerializer.text(Integer.toString(p.x));
+					 xmlSerializer.text(Float.toString(p.x));
 					 xmlSerializer.endTag("",  "x");
 					 xmlSerializer.startTag("", "y");
-					 xmlSerializer.text(Integer.toString(p.y));
+					 xmlSerializer.text(Float.toString(p.y));
 					 xmlSerializer.endTag("",  "y");
 					 xmlSerializer.endTag("",  "bookmark");
 				 }

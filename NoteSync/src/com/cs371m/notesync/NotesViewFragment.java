@@ -43,58 +43,23 @@ public class NotesViewFragment extends ListFragment{
 		
 		return rootView;
 	}
-	
 
-    //from http://stackoverflow.com/questions/16834678/android-setonitemclicklistener-event-of-listview-not-working-in-fragment
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final ListView l = (ListView) getActivity().findViewById(android.R.id.list); //(ListView) rootView, listener never gets called with android.R.id.list...
-		l.setOnItemClickListener(new OnItemClickListener() {
-	        @Override
-	        public void onItemClick(AdapterView<?> parent, View view, int position,
-	                long id) { //clicking a note opens the study view with that particular note
-	            
-	        	//refresh activity
-	        	activity = (MainActivity) getActivity();
-	        	
-	        	//set newly selected Note
-	        	activity.mCurrentNote = adapter.getItem(position);
-	        	
-	        	Toast.makeText(getActivity().getApplicationContext(), "New Note Selected",
-						Toast.LENGTH_SHORT).show(); //debug
-	        	
-	        	//TODO: re-create the StudyView, thus displaying a new image 
-	        	
-	        	
-	        	//TODO: tell the background PlayBackService to play here, instead of on view creation
-	        	activity.mBoundPlayService.Play(activity.mCurrentNote.recording);
-	        	
-	        	/*//Failed attempt to navigate to StudyView
-	        	//go to the study view using a fragment transaction
-	        	FragmentManager fragmentManager = getFragmentManager();
-	        	Fragment studyView = fragmentManager.findFragmentById(fragmentManager.);
-	        	FragmentTransaction transaction = getFragmentManager().beginTransaction();
-	        	// Replace whatever is in the fragment_container view with this fragment,
-	        	
-	        	// and add the transaction to the back stack
-	        	transaction.replace(R.id.notes_view_fragment, studyView); //R.id.fragment_container?
-	        	transaction.addToBackStack(null);
-	        	view.
-	        	mViewPager.setCurrentItem(STUDY_VIEW_POS); //assume study view at position 2
-	        	*/
-	            
-	            
-	        }
-		});
-        
-    }
-	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		 Note note = (Note) getListView().getItemAtPosition(position);
-		 ((MainActivity) getActivity()).mViewPager.setCurrentItem(2);
+		 MainActivity main = ((MainActivity) getActivity());
+		 main.mCurrentNote = note;
+		 main.mViewPager.setCurrentItem(2);
+		 
+		 Toast.makeText(getActivity().getApplicationContext(), "New Note Selected",
+					Toast.LENGTH_SHORT).show(); //debug
+//     	
+//     	//TODO: re-create the StudyView, thus displaying a new image 
+//     	
+//     	
+//     	//TODO: tell the background PlayBackService to play here, instead of on view creation
+//     	activity.mBoundPlayService.Play(activity.mCurrentNote.recording);
+		 
 	}
 	
 	@Override

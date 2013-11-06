@@ -3,7 +3,6 @@ package com.cs371m.notesync;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import android.graphics.Point;
 
 public class Note implements Serializable
 {

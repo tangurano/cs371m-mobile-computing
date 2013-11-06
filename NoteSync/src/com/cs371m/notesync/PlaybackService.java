@@ -100,6 +100,7 @@ public class PlaybackService extends Service{
 			mPlayer = new MediaPlayer();
 
 			try {
+				mPlayer.setDataSource(path);
 				mPlayer.prepare();
 			} catch (IOException e) {
 				Log.e(TAG, "prepare() failed: " + e.getMessage());
