@@ -1,8 +1,8 @@
 package com.cs371m.notesync;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
+
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -10,9 +10,9 @@ import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -143,7 +144,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// User touched the dialog's negative button
 		Log.v(LOG_TAG, "clicked on neg");
 	}
-
+	
 	/*  RecordService  */
 
 	private ServiceConnection mRecConnection = new ServiceConnection() {
@@ -296,14 +297,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if (mStartPlaying) {
 			if (mIsPlayBound && mCurrentNote != null && mCurrentNote.recording != null) {
 				mBoundPlayService.Play(mCurrentNote.recording);
+				mPlayButton=(Button) findViewById(R.id.mPlayButton);
+				mPlayButton.setText(R.string.stopPlaying);
 			}
-			mPlayButton=(Button) findViewById(R.id.mPlayButton);
-			mPlayButton.setText(R.string.stopPlaying);
 		} else { 
 			if (mIsPlayBound) {
 				mBoundPlayService.Stop();
+				mPlayButton.setText(R.string.startPlaying);
 			}
-			mPlayButton.setText(R.string.startPlaying);
 		}
 		
 		mStartPlaying = !mStartPlaying;
@@ -578,7 +579,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected void onResume() {
 		super.onResume();
 		doBindRecService();
-		doBindPlayService(); //both?
+		doBindPlayService();
+		
 		if (mWakeLock == null) {
 			mWakeLock = ((PowerManager)this.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "recordlock");
 		}

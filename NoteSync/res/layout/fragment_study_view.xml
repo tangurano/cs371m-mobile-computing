@@ -19,7 +19,8 @@
         android:id="@+id/imgDisplay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter" 
+        /> <!--   android:onClick="onTouchImageView" (versus gesture onDown -->
     
     <Button
         android:id="@+id/mPlayButton"

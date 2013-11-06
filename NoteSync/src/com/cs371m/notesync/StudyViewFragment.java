@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -28,34 +25,26 @@ import android.widget.Toast;
  *
  */
 public class StudyViewFragment extends Fragment { //vs static inner class? 
-	/**
-	 * The fragment argument representing the section number for this
-	 * fragment.
-	 */
-	public static final String ARG_IMAGE_PATH = "image_path";
-	public static final String ARG_RECORDING_PATH = "recording_path";
-	public static final String STUDY_VIEW_LOG_TAG = "StudyViewFragment";
 
 	//Global ArrayList to store all x,y coords of long presses
 	//public static ArrayList<point> lpressLocs=new ArrayList();
 	public static int numlpress;
 
+	public static final String ARG_IMAGE_PATH = "image_path";
+	public static final String ARG_RECORDING_PATH = "recording_path";
+	public static final String STUDY_VIEW_LOG_TAG = "StudyViewFragment";
 	public ImageView image;
 
-	public MediaPlayer mediaPlayer; //to prevent replaying TODO: move to service
-
-	MainActivity activity; //always null?
-
-	public StudyViewFragment() 
-	{
-
-	}
-
+	MediaController mediaController;
+	PlaybackController pController;
+	
 	//called everytime the view is displayed?
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
+		MainActivity activity = (MainActivity) getActivity(); 
+		
 		Log.v(STUDY_VIEW_LOG_TAG, "in onCreateView");
 		View rootView = inflater.inflate(R.layout.fragment_study_view, container, false);
 		image = (ImageView) rootView.findViewById(R.id.imgDisplay);
@@ -65,10 +54,17 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 		//String appDirectory = c.getFilesDir().getAbsolutePath(); //getPath? //getFilesDir gives hidden internal directory /data/data
 		//String imgDirectory = c.getDir("img", Context.MODE_PRIVATE).getAbsolutePath(); //app_img
 		Log.v(STUDY_VIEW_LOG_TAG, "about to update study view");
+		
+		//mediaController = (MediaController) rootView.findViewById(R.id.mediaController); //DOES NOT WORK!
+		mediaController = new MediaController(getActivity()); 
+        pController = new PlaybackController(activity.mBoundPlayService);
+		if (activity.mCurrentNote != null)
+			pController.setMediaPath(activity.mCurrentNote.recording); 
+		mediaController.setMediaPlayer(pController);
+		mediaController.setAnchorView(image);
+		
 		updateStudyView();
-
-		//TODO: add controls
-		MediaController mc = (MediaController) rootView.findViewById(R.id.mediaController);
+		
 		//Add Long press gesture for annotation 
 		//Init number of long presses so far
 		numlpress=0;
@@ -83,6 +79,7 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 					public boolean onDown(MotionEvent e) 
 					{
 						Log.v(STUDY_VIEW_LOG_TAG, "down tapped");
+						mediaController.show();
 						return true;
 					}
 					 
@@ -97,11 +94,11 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 					{
 						//Retrieve coords
 						//if NUMBER OF long presses so far  <= Total number of notes in arraylist
-						if (numlpress < MainActivity.notes.size())
+						//Update "Current" Note's list of bookmarks
+						if (main.mCurrentNote!=null)
 						{
 							Point perPt = new Point(e.getX(),e.getY());
-							//Update "Current" Note's list of bookmarks
-							if (main.mCurrentNote!=null)
+							if (numlpress < main.mCurrentNote.timestamps.size())
 							{
 								Log.v(STUDY_VIEW_LOG_TAG, "main.mcurr " + main.mCurrentNote);
 								if (main.mCurrentNote.bookmarks!=null)
@@ -111,7 +108,7 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 								}
 								else
 								{
-									main.mCurrentNote.bookmarks=new ArrayList<Point> ();
+									main.mCurrentNote.bookmarks=new ArrayList<Point>();
 									main.mCurrentNote.bookmarks.add(perPt);
 									Log.v(STUDY_VIEW_LOG_TAG, "added 1st x:"+perPt.x+" y: "+ perPt.y);
 								}
@@ -121,7 +118,7 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 						}
 						else
 						{
-							Log.v(STUDY_VIEW_LOG_TAG,"Exceeded "+ MainActivity.notes.size()+" Presses\n");
+							Log.v(STUDY_VIEW_LOG_TAG,"Exceeded "+ main.mCurrentNote.timestamps.size()+" Presses\n");
 						}
 					}
 
@@ -138,8 +135,14 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 		return rootView;
 	}
 
-	public void updateStudyView() {
-		activity = (MainActivity) getActivity(); //re-init here?
+    public void updateStudyView() {
+    	MainActivity activity = (MainActivity) getActivity(); 
+    	
+    	//set up media controller
+    	if (activity.mCurrentNote != null)
+			pController.setMediaPath(activity.mCurrentNote.recording); //TESTME: non-null?
+		
+    	//updates image
 		if (activity.mCurrentNote != null ) {
 			if (activity.mCurrentNote.image != null)
 				drawImage(activity.mCurrentNote.image, image); //TODO: add pinch-zoom ///data/data/com.cs371m.notesync/files/IMG_20131104_102808.jpg
@@ -156,7 +159,6 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 
 	}
 
-
 	private void drawImage(String path, ImageView image) {
 		//TODO: validate correct path?
 		try {
@@ -172,9 +174,4 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 			image.setImageResource(R.drawable.ic_launcher);  //TODO: use different image indicating bad file
 		}
 	}
-
-	/*//causes failure to play
-    public void onPrepared(MediaPlayer player) {
-        player.start();
-    }*/
 }

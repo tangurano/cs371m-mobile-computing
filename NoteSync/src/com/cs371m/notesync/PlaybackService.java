@@ -2,7 +2,6 @@ package com.cs371m.notesync;
 
 import java.io.IOException;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,13 +12,12 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.text.format.Time;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.Toast;
 
 public class PlaybackService extends Service{
 
 	private final String TAG = "PlaybackService";
-	private MediaPlayer mPlayer;
+	MediaPlayer mPlayer;
 	private WakeLock mLock;
 	Time time = new Time();
 	public String mFileName;
