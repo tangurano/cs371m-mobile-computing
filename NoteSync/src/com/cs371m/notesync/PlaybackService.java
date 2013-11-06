@@ -76,7 +76,7 @@ public class PlaybackService extends Service{
 	}
 
 	public void Stop() {
-		if (mPlayer!= null && mPlayer.isPlaying()) {
+		if (mPlayer!= null) { //&& mPlayer.isPlaying()
 			Toast.makeText(this, "Stopped Playing", Toast.LENGTH_LONG).show();
 			mPlayer.stop();
 			mPlayer.release();

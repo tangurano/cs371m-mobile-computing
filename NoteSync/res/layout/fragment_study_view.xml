@@ -32,14 +32,4 @@
         android:text="@string/startPlaying"
         android:textSize="20sp" />
     
-    <MediaController
-        android:id="@+id/mediaController"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imgDisplay"
-        android:layout_alignLeft="@+id/imgDisplay"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="66dp" >
-    </MediaController>
-    
 </RelativeLayout>

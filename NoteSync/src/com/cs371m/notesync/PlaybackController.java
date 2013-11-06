@@ -18,19 +18,19 @@ public class PlaybackController implements MediaPlayerControl{
 	@Override
 	public boolean canPause() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean canSeekBackward() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean canSeekForward() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -48,18 +48,33 @@ public class PlaybackController implements MediaPlayerControl{
 	@Override
 	public int getCurrentPosition() {
 		// TODO Auto-generated method stub
+		if (service != null) {
+			if (service.mPlayer != null) {
+				return service.mPlayer.getCurrentPosition();
+			}
+		}
 		return 0;
 	}
 
 	@Override
 	public int getDuration() {
 		// TODO Auto-generated method stub
+		if (service != null) {
+			if (service.mPlayer != null) {
+				return service.mPlayer.getDuration();
+			}
+		}
 		return 0;
 	}
 
 	@Override
 	public boolean isPlaying() {
 		// TODO Auto-generated method stub
+		if (service != null) {
+			if (service.mPlayer != null) {
+				return service.mPlayer.isPlaying();
+			}
+		}
 		return false;
 	}
 

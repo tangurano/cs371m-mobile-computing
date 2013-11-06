@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.Toast;
@@ -62,6 +65,14 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 			pController.setMediaPath(activity.mCurrentNote.recording); 
 		mediaController.setMediaPlayer(pController);
 		mediaController.setAnchorView(image);
+		/*mediaController.setOnClickListener( new View.OnClickListener() {
+			@Override
+			public void onClick(View view) //onPlay...
+			{
+					
+
+			}
+		}); */
 		
 		updateStudyView();
 		
