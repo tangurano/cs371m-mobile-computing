@@ -15,13 +15,13 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" /> -->
 
-    <ImageView
+    <com.cs371m.notesync.MyImageView
         android:id="@+id/imgDisplay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scaleType="fitCenter" 
-        /> <!--   android:onClick="onTouchImageView" (versus gesture onDown -->
-    
+        /> 
+  
     <Button
         android:id="@+id/mPlayButton"
         android:layout_width="wrap_content"
