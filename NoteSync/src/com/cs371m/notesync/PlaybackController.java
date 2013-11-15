@@ -92,7 +92,7 @@ public class PlaybackController implements MediaPlayerControl{
 
 	@Override
 	public void start() {
-		if (service != null)
+		if (service != null && mediaPath != null)
 			service.Play(mediaPath);
 	}
 	
