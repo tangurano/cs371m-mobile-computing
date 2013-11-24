@@ -29,7 +29,7 @@ import android.widget.Toast;
  * @author ctang
  *
  */
-public class StudyViewFragment extends Fragment { //vs static inner class? 
+public class StudyViewFragment extends Fragment { //vs static inner class?
 
 	//Global ArrayList to store all x,y coords of long presses
 	//public static ArrayList<point> lpressLocs=new ArrayList();
@@ -39,43 +39,37 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 	public static final String ARG_RECORDING_PATH = "recording_path";
 	public static final String STUDY_VIEW_LOG_TAG = "StudyViewFragment";
 	public MyImageView image;
-	
+
 
 	MediaController mediaController;
 	PlaybackController pController;
 	Note note;
 
-	//called everytime the view is displayed?
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		MainActivity activity = (MainActivity) getActivity(); 
+		MainActivity activity = (MainActivity) getActivity();
 
 		Log.v(STUDY_VIEW_LOG_TAG, "in onCreateView");
-		View rootView = inflater.inflate(R.layout.fragment_study_view, container, false);
-		image = (MyImageView) rootView.findViewById(R.id.imgDisplay);
-		//? arguments Bundle vs savedInstanceState? vs using mainActivity state?
-		//external useful for testing
-		//String externalDirectory = rootView.getContext().getExternalFilesDir(null).getAbsolutePath(); //storage/sdcard0/Android/data/com.cs371m.notesync/files
-		//String appDirectory = c.getFilesDir().getAbsolutePath(); //getPath? //getFilesDir gives hidden internal directory /data/data
-		//String imgDirectory = c.getDir("img", Context.MODE_PRIVATE).getAbsolutePath(); //app_img
-		Log.v(STUDY_VIEW_LOG_TAG, "about to update study view");
-
-		//mediaController = (MediaController) rootView.findViewById(R.id.mediaController); //DOES NOT WORK!
-		mediaController = new MediaController(getActivity()); 
-
+		mediaController = new MediaController(getActivity());
 		pController = new PlaybackController(activity.mBoundPlayService);
-		if (activity.mCurrentNote != null) {
+
+		View rootView = inflater.inflate(R.layout.fragment_study_view, container, false);
+		//Set up mediaController
+		if (activity.mCurrentNote != null)
+		{
 			note = activity.mCurrentNote;
 			pController.setMediaPath(activity.mCurrentNote.recording);
 		}
 		mediaController.setMediaPlayer(pController);
 
 		//Set the prev next listeners to seek note audio bookmarks
-		mediaController.setPrevNextListeners(new View.OnClickListener() {
+		mediaController.setPrevNextListeners(new View.OnClickListener()
+		{
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v)
+			{
 				//next button clicked
 				long pos = (long) pController.getCurrentPosition();
 				if (note != null) {
@@ -94,7 +88,8 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 				//previous button clicked
 				long pos = (long) pController.getCurrentPosition();
 				if (note != null) {
-					for (int i=note.timestamps.size() - 1; i>=0; i--) {
+					for (int i=note.timestamps.size() - 1; i>=0; i--)
+					{
 						long ts = note.timestamps.get(i);
 						if (ts < pos - 2000) {
 							pController.seekTo((int)ts);
@@ -105,6 +100,20 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 				}
 			}
 		});
+
+		image = (MyImageView) rootView.findViewById(R.id.imgDisplay);
+		//Set mediaControllers, playbackController
+		image.setControllers(mediaController, pController);
+
+		//? arguments Bundle vs savedInstanceState? vs using mainActivity state?
+		//external useful for testing
+		//String externalDirectory = rootView.getContext().getExternalFilesDir(null).getAbsolutePath(); //storage/sdcard0/Android/data/com.cs371m.notesync/files
+		//String appDirectory = c.getFilesDir().getAbsolutePath(); //getPath? //getFilesDir gives hidden internal directory /data/data
+		//String imgDirectory = c.getDir("img", Context.MODE_PRIVATE).getAbsolutePath(); //app_img
+		Log.v(STUDY_VIEW_LOG_TAG, "about to update study view");
+
+		//mediaController = (MediaController) rootView.findViewById(R.id.mediaController); //DOES NOT WORK!
+
 
 		mediaController.setAnchorView(image);
 		/*mediaController.setOnClickListener( new View.OnClickListener() {
@@ -118,31 +127,40 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 
 		updateStudyView();
 
-		//Add Long press gesture for annotation 
+		//Add Long press gesture for annotation
 		//Init number of long presses so far
 		numlpress=0;
-		
-		Log.v(STUDY_VIEW_LOG_TAG, "declare gesture fields");
-//		final GestureDetector gesture = new GestureDetector(
-//				getActivity(),  new GestureDetector.SimpleOnGestureListener() 
-//				{
-//					MainActivity main = ((MainActivity) getActivity());
-//
-//
-//					@Override
-//					public boolean onDown(MotionEvent e) 
-//					{
-//						Log.v(STUDY_VIEW_LOG_TAG, "down tapped");
-//						mediaController.show();
-//						return true;
-//					}
-//
-//					public boolean onDoubleTapEvent (MotionEvent e)
-//					{
-//
-//						Log.v(STUDY_VIEW_LOG_TAG, "double tapped");
-//						return true;
-//					}
+		/*
+		Log.v(STUDY_VIEW_LOG_TAG, "declare StudyViewFrag gesture fields");
+        final GestureDetector gesture = new GestureDetector(
+				getActivity(),  new GestureDetector.SimpleOnGestureListener()
+				{
+
+					MainActivity main = ((MainActivity) getActivity());
+
+					//Always include onDown for any gesture
+					@Override
+					public boolean onDown(MotionEvent e)
+					{
+						Log.v(STUDY_VIEW_LOG_TAG, "down tapped");
+
+						return true;
+					}
+					@Override
+					public boolean onSingleTapUp(MotionEvent e)
+					{
+						Log.v(STUDY_VIEW_LOG_TAG, "single Tap up");
+						//mediaController.show();
+						return true;
+					}
+					@Override
+					public boolean onDoubleTap (MotionEvent e)
+					{
+
+						Log.v(STUDY_VIEW_LOG_TAG, "double tapped");
+						//mediaController.show();
+						return true;
+					}
 //					@Override
 //					public void onLongPress (MotionEvent e)
 //					{
@@ -158,7 +176,7 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 //								if (main.mCurrentNote.bookmarks!=null)
 //								{
 //									main.mCurrentNote.bookmarks.add(perPt);
-//									Log.v(STUDY_VIEW_LOG_TAG, "added "+(numlpress+1)+ "th  x: "+perPt.x+" y: "+ perPt.y);											
+//									Log.v(STUDY_VIEW_LOG_TAG, "added "+(numlpress+1)+ "th  x: "+perPt.x+" y: "+ perPt.y);
 //								}
 //								else
 //								{
@@ -176,28 +194,30 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 //						}
 //					}
 //
-//				});
+				});
 //
-//		rootView.setOnTouchListener(new View.OnTouchListener() {
-//			@Override
-//			public boolean onTouch(View v, MotionEvent event) {
-//				return gesture.onTouchEvent(event);
-//			}
-//		});
+		rootView.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				return gesture.onTouchEvent(event);
+			}
+		});
+		*/
 //		Toast.makeText(getActivity().getApplicationContext(), "Lpress enabled: "+ gesture.isLongpressEnabled(), Toast.LENGTH_LONG).show();
-		//Log.v(STUDY_VIEW_LOG_TAG, );
 		return rootView;
 	}
 
-	public void updateStudyView() {
-		MainActivity activity = (MainActivity) getActivity(); 
-		
+	public void updateStudyView()
+	{
+		MainActivity activity = (MainActivity) getActivity();
+
 
 		//set up media controller
 		if (activity.mCurrentNote != null)
 			pController.setMediaPath(activity.mCurrentNote.recording); //TESTME: non-null?
 
 		//updates image
+
 		if (activity.mCurrentNote != null ) {
 			if (activity.mCurrentNote.image != null) {
 				drawImage(activity.mCurrentNote.image, image); //TODO: add pinch-zoom ///data/data/com.cs371m.notesync/files/IMG_20131104_102808.jpg
@@ -218,7 +238,7 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 	private void drawImage(String path, ImageView image) {
 		//TODO: validate correct path?
 		try {
-			if (!(new File(path).exists())) 
+			if (!(new File(path).exists()))
 				throw new Exception("no such file exists");
 			Bitmap bmap = BitmapFactory.decodeFile(path);
 			if (bmap == null)
