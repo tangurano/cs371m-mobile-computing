@@ -6,6 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:splitMotionEvents="true"
     tools:context=".MainActivity$SectionFragment" >
 
     <!-- TODO: multi-image support
@@ -15,11 +16,22 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" /> -->
 
-    <ImageView
+    <com.cs371m.notesync.MyImageView
         android:id="@+id/imgDisplay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:scaleType="fitCenter" 
-        /> <!--   android:onClick="onTouchImageView" (versus gesture onDown -->
-    
+        android:scaleType="fitCenter" <!--   android:onClick="onTouchImageView" (versus gesture onDown -->
+        />
+
+    <Button
+        android:id="@+id/mPlayButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:onClick="onClickStartPlay"
+        android:text="@string/startPlaying"
+        android:textSize="20sp" />
+
+>>>>>>> 5e0a334f2e1339f37f142439ae32a0a84f5def56
 </RelativeLayout>

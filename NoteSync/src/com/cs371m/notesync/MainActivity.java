@@ -403,6 +403,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
+		tempTimestamps= new ArrayList<Long>();
+		
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -568,7 +570,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		try {
 			notes = Helper.loadNotes(this.getApplicationContext());
-			tempTimestamps= new ArrayList<Long>();
+			//tempTimestamps= new ArrayList<Long>();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
