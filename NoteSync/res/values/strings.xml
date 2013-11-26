@@ -12,8 +12,9 @@
  	<string name="makeTag">Tag Moment</string>
  	<string name="addTitle">Recording Title</string>
  	<string name="addClass">Class Name</string>
- 	
+ 	<string name ="confirmAddNote">Are you sure you want to add this visual bookmark?</string>
  	<string name="addTag">Tag(s)</string>
  	<string name="done">Done</string>
+ 	<string name="ok">OK</string>
  	<string name="cancel">Cancel</string>
 </resources>
