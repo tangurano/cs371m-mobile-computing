@@ -20,17 +20,7 @@
         android:id="@+id/imgDisplay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:scaleType="fitCenter"
+        android:scaleType="fitCenter" 
         />
-
-    <Button
-        android:id="@+id/mPlayButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:onClick="onClickStartPlay"
-        android:text="@string/startPlaying"
-        android:textSize="20sp" />
-
+<!--   android:onClick="onTouchImageView" (versus gesture onDown -->
 </RelativeLayout>

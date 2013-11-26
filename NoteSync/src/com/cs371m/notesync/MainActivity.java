@@ -292,24 +292,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 	
-	public void onClickStartPlay(View v) 
-	{
-		if (mStartPlaying) {
-			if (mIsPlayBound && mCurrentNote != null && mCurrentNote.recording != null) {
-				mBoundPlayService.Play(mCurrentNote.recording);
-				mPlayButton=(Button) findViewById(R.id.mPlayButton);
-				mPlayButton.setText(R.string.stopPlaying);
-			}
-		} else { 
-			if (mIsPlayBound) {
-				mBoundPlayService.Stop();
-				mPlayButton.setText(R.string.startPlaying);
-			}
-		}
-		
-		mStartPlaying = !mStartPlaying;
-	}
-	
 	/* Dialog */
 	
 	public static class EditRecInfoDialogFragment extends DialogFragment 
