@@ -223,14 +223,14 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 				drawImage(activity.mCurrentNote.image, image); //TODO: add pinch-zoom ///data/data/com.cs371m.notesync/files/IMG_20131104_102808.jpg
 				note = activity.mCurrentNote;
 			} else
-				image.setImageResource(R.drawable.ic_launcher); //TODO: use NoteSync logo
+				image.setImageResource(R.drawable.notesync_logo); //TODO: use NoteSync logo
 
 			//TODO: test playback unaffected when returning to view
 			//MOVED TO SERVICE code
 			//if (activity.mCurrentNote.recording != null && mediaPlayer == null)
 			//	playRecording(activity.mCurrentNote.recording, rootView.getContext());
 		} else
-			image.setImageResource(R.drawable.ic_launcher); //TODO: use NoteSync logo
+			image.setImageResource(R.drawable.notesync_logo); //TODO: use NoteSync logo
 
 
 	}
@@ -247,7 +247,7 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 
 		} catch (Exception e) {
 			Log.e(STUDY_VIEW_LOG_TAG, "Failed to display image at path: " + path + " with error: " + e.getMessage());
-			image.setImageResource(R.drawable.ic_launcher);  //TODO: use different image indicating bad file
+			image.setImageResource(R.drawable.notesync_logo);  //TODO: use different image indicating bad file
 		}
 	}
 
