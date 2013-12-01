@@ -3,13 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <Button
+    <ImageView
         android:id="@+id/mRecordButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onClickStartRec"
-        android:text="@string/startRecord"
-        android:textSize="20sp" />
+        android:scaleType="fitCenter"
+        android:src="@drawable/record_button"
+        android:layout_centerHorizontal="true" />
+    
+ <!--       <ImageView
+        android:id="@+id/mTagButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/mRecordButton"
+        android:layout_marginTop="21dp"
+        android:onClick="onClickMakeTag"
+        android:scaleType="fitCenter"
+        android:layout_centerHorizontal="true" />-->
 
       <Button
           android:id="@+id/mTagButton"
@@ -20,6 +32,7 @@
           android:layout_marginTop="21dp"
           android:onClick="onClickMakeTag"
           android:text="@string/makeTag"
-          android:textSize="20sp" />
+          android:textSize="20sp"
+          android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

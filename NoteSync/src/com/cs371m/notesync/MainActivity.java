@@ -34,7 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.MediaController;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,7 +43,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private static final String LOG_TAG = "AudioRecordTest";
 	private static String mFileName = null;
 
-	private Button mRecordButton = null;
+	private ImageView mRecordButton = null; //Button
 	private MediaRecorder mRecorder = null;
 
 	private Button   mPlayButton = null;
@@ -224,10 +224,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		onRecord(mStartRecording);
 
 		if (mStartRecording) {
-			mRecordButton=(Button) findViewById(R.id.mRecordButton);
-			mRecordButton.setText(R.string.stopRecord);
+			mRecordButton=(ImageView) findViewById(R.id.mRecordButton);
+			mRecordButton.setImageResource(R.drawable.stop_button); 
+			//mRecordButton.setText(R.string.stopRecord);
 		} else {
-			mRecordButton.setText(R.string.startRecord);
+			mRecordButton.setImageResource(R.drawable.record_button); 
+			//mRecordButton.setText(R.string.startRecord);
 		}
 		mStartRecording = !mStartRecording;
 	}
