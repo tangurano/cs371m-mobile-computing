@@ -65,11 +65,20 @@ public class RecordService extends Service{
 		Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
 		Log.d(TAG, "onDestroy");
 		if (mRecorder != null) {
-			mRecorder.stop();
-			mRecorder.release();
+			try {
+				mRecorder.stop();
+				mRecorder.release();
+            } catch (Throwable th) {
+                // ignoring this exception, probably wakeLock was already released
+            }
+			
 		}
 		if (mLock != null) {
-			mLock.release();
+			try {
+				mLock.release();
+            } catch (Throwable th) {
+                // ignoring this exception, probably wakeLock was already released
+            }
 		}
 		mRecorder = null;
 		isRunning = false;

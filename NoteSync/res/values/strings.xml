@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">NoteSync</string>
-	<string name="action_settings">Settings</string>
-	<string name="title_section1">Record</string>
-	<string name="title_section2">Notebook</string>
-	<string name="title_section3">Study</string>
- 	<string name="startRecord">Start Recording</string>
- 	<string name="stopRecord">Stop Recording</string>
- 	<string name="startPlaying">Start Playing</string>
- 	<string name="stopPlaying">Stop Playing</string>
- 	<string name="makeTag">Tag Moment</string>
- 	<string name="addTitle">Recording Title</string>
- 	<string name="addClass">Class Name</string>
- 	<string name ="confirmAddNote">Are you sure you want to add this visual bookmark?</string>
- 	<string name="addTag">Tag(s)</string>
- 	<string name="done">Done</string>
- 	<string name="ok">OK</string>
- 	<string name="cancel">Cancel</string>
+
+    <string name="app_name">NoteSync</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_section1">Record</string>
+    <string name="title_section2">Notebook</string>
+    <string name="title_section3">Study</string>
+    <string name="startRecord">Start Recording</string>
+    <string name="stopRecord">Stop Recording</string>
+    <string name="startPlaying">Start Playing</string>
+    <string name="stopPlaying">Stop Playing</string>
+    <string name="makeTag">Tag Moment</string>
+    <string name="addTitle">Recording Title</string>
+    <string name="addClass">Class Name</string>
+    <string name="confirmAddNote">Are you sure you want to add this visual bookmark?</string>
+    <string name="addTag">Tag(s)</string>
+    <string name="done">Done</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <string-array name="menu">
+        <item>Edit</item>
+        <item>Delete</item>
+    </string-array>
+
 </resources>

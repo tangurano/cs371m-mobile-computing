@@ -69,7 +69,11 @@ public class PlaybackService extends Service{
 			mPlayer.release();
 		}
 		if (mLock != null) {
-			mLock.release();
+			try {
+				mLock.release();
+            } catch (Throwable th) {
+                // ignoring this exception, probably wakeLock was already released
+            }
 		}
 		mPlayer = null;
 

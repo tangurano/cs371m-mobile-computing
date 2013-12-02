@@ -1,6 +1,7 @@
 package com.cs371m.notesync;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Locale;
 
 import android.app.ActionBar;
@@ -28,18 +29,24 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
+	private static int currentIndex;
 	private static final String LOG_TAG = "AudioRecordTest";
 	private static String mFileName = null;
 
@@ -86,30 +93,31 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	private static Uri fileUri;
 
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-	        if (resultCode == RESULT_OK) {
-	        	if (data == null)
-	        		Toast.makeText(this, "Image saved correctly", Toast.LENGTH_SHORT).show();
-	        	else
-	        		Toast.makeText(this, "Image saved to:\n" +
-		                     data.getData(), Toast.LENGTH_LONG).show();
-	        } else if (resultCode == RESULT_CANCELED) {
-	            // User cancelled the image capture
-	        } else {
-	            // Image capture failed, advise user
-	        }
-	    }
+		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+			if (resultCode == RESULT_OK) {
+				if (data == null)
+					Toast.makeText(this, "Image saved correctly", Toast.LENGTH_SHORT).show();
+				else
+					Toast.makeText(this, "Image saved to:\n" +
+							data.getData(), Toast.LENGTH_LONG).show();
+			} else if (resultCode == RESULT_CANCELED) {
+				// User cancelled the image capture
+			} else {
+				// Image capture failed, advise user
+			}
+		}
 		showEditRecInfoDialog();
 	}
-	
+
 	public void startCameraIntent() {
 		// create Intent to take a picture and return control to the calling application
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
 		fileUri = Helper.getOutputMediaFileUri(MEDIA_TYPE_IMAGE, this.getApplicationContext()); // create a file to save the image
-		
+
 		//TODO: Not saving to correct output path.
 		/*
 		startRecTime = "TESTNAME"; //ignore DST?
@@ -118,8 +126,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 		temp += File.separator+startRecTime+".jpg";
 		fileUri = Uri.fromFile(new File(temp));
-		*/
-		
+		 */
+
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
 		// start the image capture Intent
@@ -132,6 +140,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		dialog.show(getFragmentManager(), "Edit Title Fragment");
 	}
 	
+	public void showReEditRecInfoDialog() {
+		// Create an instance of the dialog fragment and show it
+		DialogFragment dialog = new ReEditRecInfoDialogFragment();
+		dialog.show(getFragmentManager(), "Edit Title Fragment");
+	}
+
 	// The dialog fragment receives a reference to this Activity through the
 	// Fragment.onAttach() callback, which it uses to call the following methods
 	// defined by the NoticeDialogFragment.NoticeDialogListener interface
@@ -144,7 +158,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// User touched the dialog's negative button
 		Log.v(LOG_TAG, "clicked on neg");
 	}
-	
+
 	/*  RecordService  */
 
 	private ServiceConnection mRecConnection = new ServiceConnection() {
@@ -247,7 +261,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			tempTimestamps.add(offset);
 		}
 	}
-	
+
 	/*  PlaybackService  */
 
 	private ServiceConnection mPlayConnection = new ServiceConnection() {
@@ -276,6 +290,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	};
 
+
 	void doBindPlayService() {
 		// Establish a connection with the service.  We use an explicit
 		// class name because we want a specific service implementation that
@@ -293,9 +308,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mIsPlayBound = false;
 		}
 	}
-	
+
 	/* Dialog */
-	
+
 	public static class EditRecInfoDialogFragment extends DialogFragment 
 	{
 		public interface EditRecInfoDialogListener 
@@ -350,12 +365,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				}
 
 			})
-					.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//Give default name
-							EditRecInfoDialogFragment.this.getDialog().cancel();
-						}
-					}); 
+			.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					//Give default name
+					EditRecInfoDialogFragment.this.getDialog().cancel();
+				}
+			}); 
 			//Return the created dialogue box
 			return builder.create();
 
@@ -374,7 +389,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				perNote.topic=inputVals[0];
 				perNote.course=inputVals[1];
 				//Update timeStamp
-				
+
 				//Debug
 				perNote.timestamps=tempTimestamps;
 				perNote.recording = mFileName;
@@ -406,7 +421,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		tempTimestamps= new ArrayList<Long>();
-		
+
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -438,6 +453,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
+
+		//ListView list = (ListView)findViewById(android.R.id.list);
+		//registerForContextMenu(list);
 	}
 
 	@Override
@@ -458,6 +476,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				NotesViewFragment frag = (NotesViewFragment) adapter.instantiateItem(mViewPager, 1);
 				if (frag != null)
 					frag.updateList();
+
+				ListView list = (ListView) findViewById(android.R.id.list);
+				if (list != null)
+					registerForContextMenu(list);
+
 			}
 		} else if (tab.getPosition() == 2) {
 			FragmentPagerAdapter adapter = (FragmentPagerAdapter) mViewPager.getAdapter();
@@ -566,7 +589,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		super.onResume();
 		doBindRecService();
 		doBindPlayService();
-		
+
 		if (mWakeLock == null) {
 			mWakeLock = ((PowerManager)this.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "recordlock");
 		}
@@ -577,7 +600,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			notes = new ArrayList<Note>();
-			
+
 		}
 	}
 
@@ -626,4 +649,113 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+		menu.setHeaderTitle(notes.get(info.position).topic);
+		String[] menuItems = getResources().getStringArray(R.array.menu);
+		for (int i = 0; i<menuItems.length; i++) {
+			menu.add(Menu.NONE, i, i, menuItems[i]);
+		}
+
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+		int menuItemIndex = item.getItemId();
+		String[] menuItems = getResources().getStringArray(R.array.menu);
+		String menuItemName = menuItems[menuItemIndex];
+		String listItemName = notes.get(info.position).topic;
+
+		switch(item.getItemId()) {
+		case 0:
+			currentIndex = info.position;
+			showReEditRecInfoDialog();
+			break;
+		case 1:
+			ListView list = (ListView) findViewById(android.R.id.list);
+			NotesAdapter adapter = (NotesAdapter) list.getAdapter();
+			adapter.remove(adapter.getItem(info.position));
+			adapter.notifyDataSetChanged();
+			notes.remove(info.position);
+		}
+		return super.onContextItemSelected(item);
+	}
+	
+	/* Second edit Dialog */
+
+	public static class ReEditRecInfoDialogFragment extends DialogFragment 
+	{
+		public interface ReEditRecInfoDialogListener 
+		{
+			public void onDialogPositiveClick(DialogFragment dialog);
+			public void onDialogNegativeClick(DialogFragment dialog);
+		}
+
+
+		public Dialog onCreateDialog(Bundle savedInstanceState) 
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity ());
+			// Get the layout inflater
+			LayoutInflater inflater = getActivity ().getLayoutInflater();
+			final View dialogView = inflater.inflate(R.layout.edit_title_dialog, null);
+			txtInputVals[0] = (EditText) dialogView.findViewById(R.id.changeTitle);
+			txtInputVals[1] = (EditText) dialogView.findViewById(R.id.changeClass);
+			//DialogInterface onClickInterface=new DialogInterface.OnClickListener();
+			// Inflate and set the layout for the dialog
+			// Pass null as the parent view because its going in the dialog layout
+			builder.setView(dialogView)
+			// Add action buttons
+			.setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) 
+				{
+
+					//Retrieve entered Title, Course name and Tags.
+					//txtInputVals[0]= (EditText) ((AlertDialog) dialog).findViewById(R.id.changeTitle); 
+					inputVals[0]= txtInputVals[0].getText().toString();
+					//txtInputVals[1]= (EditText) ((AlertDialog) dialog).findViewById(R.id.changeClass); 
+					inputVals[1]= txtInputVals[1].getText().toString();
+					clickedOk=true;
+
+				}
+
+			})
+			.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					//Give default name
+					ReEditRecInfoDialogFragment.this.getDialog().cancel();
+				}
+			}); 
+			txtInputVals[0].setText(notes.get(currentIndex).topic);
+			txtInputVals[1].setText(notes.get(currentIndex).course);
+			
+
+			//Return the created dialogue box
+			return builder.create();
+
+		}
+		
+
+
+		@Override
+		public void onDetach()
+		{
+			super.onDetach();
+			Log.v(LOG_TAG, "onDetach() dialog\n");
+			if (clickedOk)
+			{
+				//Fill in a Note obj w/ the input str values
+				//Add this entry to notebook view
+				Note perNote= notes.get(currentIndex);
+				perNote.topic=inputVals[0];
+				perNote.course=inputVals[1];
+			}
+			clickedOk=false;
+		}
+
+	}
 }

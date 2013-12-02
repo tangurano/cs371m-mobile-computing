@@ -3,9 +3,14 @@ package com.cs371m.notesync;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Toast;
 import android.widget.ListView;
 
@@ -21,8 +26,9 @@ public class NotesViewFragment extends ListFragment{
 	MainActivity activity;
 
 	public NotesViewFragment() {
-
 	}
+	
+
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,13 +41,41 @@ public class NotesViewFragment extends ListFragment{
 		updateList();
 		// Attach the adapter to a ListView
 		this.setListAdapter(adapter);
+
 		// add a listener to the listView
 		//this.getListView(). //fails, not yet created
-		
-		
+
+
 		return rootView;
 	}
+	/*
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	    ContextMenuInfo menuInfo) {
+	  if (v.getId()==getView().getId() && activity != null 
+			  && activity.notes != null) {
+	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+	    menu.setHeaderTitle(activity.notes.get(info.position).topic);
+	    String[] menuItems = getResources().getStringArray(R.array.menu);
+	    for (int i = 0; i<menuItems.length; i++) {
+	      menu.add(Menu.NONE, i, i, menuItems[i]);
+	    }
+	  }
+	}
 
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	  AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+	  int menuItemIndex = item.getItemId();
+	  String[] menuItems = getResources().getStringArray(R.array.menu);
+	  String menuItemName = menuItems[menuItemIndex];
+	  String listItemName = activity.notes.get(info.position).topic;
+
+	  //case menuItemIndex
+	  return true;
+	}
+	*/
+	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		 Note note = (Note) getListView().getItemAtPosition(position);
