@@ -10,8 +10,9 @@ import android.widget.TextView;
 public class NotesAdapter extends ArrayAdapter<Note> {
 
 	private static class ViewHolder {
-		TextView topic;
 		TextView course;
+		TextView topic;
+		TextView date;
 	}
 
 	public NotesAdapter(Context context) {
@@ -28,15 +29,17 @@ public class NotesAdapter extends ArrayAdapter<Note> {
 			viewHolder = new ViewHolder();
 			LayoutInflater inflater = LayoutInflater.from(getContext());
 			convertView = inflater.inflate(R.layout.note_item, null);
-			viewHolder.topic = (TextView) convertView.findViewById(R.id.noteTopic);
 			viewHolder.course = (TextView) convertView.findViewById(R.id.noteCourse);
+			viewHolder.topic = (TextView) convertView.findViewById(R.id.noteTopic);		
+			viewHolder.date = (TextView) convertView.findViewById(R.id.noteDate);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 		// Populate the data into the template view using the data object
-		viewHolder.topic.setText(note.topic);
-		viewHolder.course.setText(note.course);
+		viewHolder.course.setText(note.topic);
+		viewHolder.topic.setText(note.course);
+		viewHolder.date.setText(note.date);
 		// Return the completed view to render on screen
 		return convertView;
 	}

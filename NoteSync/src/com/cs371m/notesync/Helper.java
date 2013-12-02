@@ -135,6 +135,8 @@ public class Helper {
         			current.course = xpp.nextText();
         		} else if (currentTag.equals("topic")) {
         			current.topic = xpp.nextText();
+        		}else if (currentTag.equals("date")) {
+        			current.date = xpp.nextText();
         		} else if (currentTag.equals("recording")) {
         			current.recording = xpp.nextText();
         		} else if (currentTag.equals("image")) {
@@ -180,6 +182,11 @@ public class Helper {
 				 xmlSerializer.startTag("", "topic");
 				 xmlSerializer.text(note.topic);
 				 xmlSerializer.endTag("", "topic");
+			 }
+			 if (note.date != null) {
+				 xmlSerializer.startTag("", "date");
+				 xmlSerializer.text(note.date);
+				 xmlSerializer.endTag("", "date");
 			 }
 			 if (note.recording != null) {
 				 xmlSerializer.startTag("", "recording");
