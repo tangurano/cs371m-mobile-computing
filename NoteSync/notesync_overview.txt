@@ -1,0 +1,80 @@
+1. Charles Tang - clt2286
+Kevin Jia - kej452d
+Jiarui Hou - jh39658
+
+2. a list of features / use cases you have completed
+    ALPHA
+Implement simple recording to a file using built-in Android MediaRecorder API
+During recording, allow the user to either use an in-app button to “tag” moments in the audio
+Users can associate an audio file with images of their notes (scanned)
+Allow image capture of notes using device camera
+Implement our own image viewer/”Study View” (no pinch zoom support yet)
+Implement media playback control bar with play/pause and jump forward/backward
+Implement Notebook View that displays all saved recordings along with class name and topic
+    BETA
+Add a long-press listener to the image viewer to allow users to visually mark the places in their notes that they tagged earlier
+Extend media playback control bar with seek to bookmark
+Inside the image viewer, a tap on a marked area will start playback from the corresponding point in the audio. We can simply use the Android MediaPlayer API to seek to the corresponding time from within LiveNote and control playback.
+General Robustness & Handling of corner cases (no known bugs, crashes, or ANR)
+added NoteSync logo and icons for record/stop/tag, animation, and visual bookmarks icon
+added toast for tag number (as an aid to the user)
+added Help option to action bar that describes each view
+added context-menu on long press to delete/edit Notes in Notebook view
+added option to add picture from Gallery or from camera
+added more metadata to Notes View (date) and changed display to most recent first
+
+3. a list of features / use cases from your application prototype that you have not completed
+Implement a Settings view that allows basic customization
+pinch-to-zoom is not fully supported because of complications with the visual bookmarks
+tagging through use of a hardware button press - this proved to be much harder than expected
+
+4.  a list of features / use cases you added that were not part of the application prototype
+Implement recording and playback using Services to allow function while app is not on-screen
+Study View navigable through its own Tab, not just through Notebook view
+
+5. a list of the classes and major chunks of code you obtained from other sources/
+Include a reference. (URL and title okay)
+MediaRecorder API example used for Record View: http://developer.android.com/guide/topics/media/audio-capture.html 
+PagerAdapter/ViewPager example used for Gallery functionality of Study View:
+http://www.androidhive.info/2013/09/android-fullscreen-image-slider-with-swipe-and-pinch-zoom-gestures/ 
+XML reader/writer
+http://developer.android.com/reference/org/xmlpull/v1/XmlPullParser.html
+Derived from the following stackoverflow response for Retrieving input data from a dialog prompt:
+http://stackoverflow.com/questions/14829456/android-alertdialog-with-custom-view-get-input-data
+Edit Note Title, Tags...Dialog/Confirmation Dialog:
+http://developer.android.com/guide/topics/ui/dialogs.html
+MediaPlayer for study view:
+https://developer.android.com/guide/topics/media/mediaplayer.html
+MediaController for study view:
+http://stackoverflow.com/questions/3747139/how-can-i-show-a-mediacontroller-while-playing-audio-in-android
+
+New since Beta:
+
+To enable Pinch-Zoom support in ImageView (not used in final beta release)
+http://www.androidhive.info/2013/09/android-fullscreen-image-slider-with-swipe-and-pinch-zoom-gestures/ 
+
+To disable swiping for tab navigation
+http://stackoverflow.com/questions/9650265/how-do-disable-paging-by-swiping-with-finger-in-viewpager-but-still-be-able-to-s 
+
+Shake animation for Tag Now Button
+http://stackoverflow.com/questions/9448732/shaking-wobble-view-animation-in-android 
+
+6. a list of the classes and major chunks of code you completed yourself
+
+Helper 
+Note 
+Point 
+NotesViewFragment
+RecordViewFragment
+StudyViewFragment (except onTouchListener)
+PlaybackService
+RecordService
+PlaybackController
+Some of MainActivity (camera intent, dialog, basic activity lifecycle methods, SectionsPagerAdapter.getItem)
+MyImageView (has visual bookmark logic)
+
+
+
+
+
+
