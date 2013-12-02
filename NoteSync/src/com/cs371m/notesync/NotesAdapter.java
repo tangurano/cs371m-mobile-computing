@@ -37,8 +37,8 @@ public class NotesAdapter extends ArrayAdapter<Note> {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 		// Populate the data into the template view using the data object
-		viewHolder.course.setText(note.topic);
-		viewHolder.topic.setText(note.course);
+		viewHolder.course.setText(note.course);
+		viewHolder.topic.setText(note.topic);
 		viewHolder.date.setText(note.date);
 		// Return the completed view to render on screen
 		return convertView;

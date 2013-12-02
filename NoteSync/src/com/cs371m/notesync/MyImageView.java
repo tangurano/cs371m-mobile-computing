@@ -68,6 +68,9 @@ public class MyImageView extends ImageView {
 				canvas.drawLine(point.x + 24, point.y - 40, point.x + 24, point.y + 44, paint);
 				canvas.drawLine(point.x - 24, point.y + 40, point.x + 3 , point.y + 16, paint);
 				canvas.drawLine(point.x + 24, point.y + 40, point.x - 3 , point.y + 16, paint);
+				paint.setColor(Color.BLACK);
+				paint.setTextSize(40);
+				canvas.drawText(Integer.toString(activity.mCurrentNote.bookmarks.lastIndexOf(point)+1) , point.x-11, point.y, paint);
 				// Log.d(TAG, "Painting: "+point);
 			}
 		}

@@ -758,7 +758,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-		menu.setHeaderTitle(notes.get(info.position).topic);
+		menu.setHeaderTitle(notes.get(notes.size() - info.position - 1).topic);
 		String[] menuItems = getResources().getStringArray(R.array.menu);
 		for (int i = 0; i<menuItems.length; i++) {
 			menu.add(Menu.NONE, i, i, menuItems[i]);
@@ -772,7 +772,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		int menuItemIndex = item.getItemId();
 		String[] menuItems = getResources().getStringArray(R.array.menu);
 		String menuItemName = menuItems[menuItemIndex];
-		String listItemName = notes.get(info.position).topic;
+		String listItemName = notes.get(notes.size() - info.position - 1).topic;
 
 		switch(item.getItemId()) {
 		case 0:
@@ -784,7 +784,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			NotesAdapter adapter = (NotesAdapter) list.getAdapter();
 			adapter.remove(adapter.getItem(info.position));
 			adapter.notifyDataSetChanged();
-			notes.remove(info.position);
+			notes.remove(notes.size() - info.position - 1);
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -834,8 +834,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					ReEditRecInfoDialogFragment.this.getDialog().cancel();
 				}
 			}); 
-			txtInputVals[0].setText(notes.get(currentIndex).topic);
-			txtInputVals[1].setText(notes.get(currentIndex).course);
+			txtInputVals[0].setText(notes.get(notes.size() - currentIndex - 1).topic);
+			txtInputVals[1].setText(notes.get(notes.size() - currentIndex - 1).course);
 
 
 			//Return the created dialogue box
@@ -854,7 +854,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			{
 				//Fill in a Note obj w/ the input str values
 				//Add this entry to notebook view
-				Note perNote= notes.get(currentIndex);
+				Note perNote= notes.get(notes.size() - currentIndex - 1);
 				perNote.topic=inputVals[0];
 				perNote.course=inputVals[1];
 			}
