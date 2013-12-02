@@ -12,17 +12,17 @@
         android:src="@drawable/record_button"
         android:layout_centerHorizontal="true" />
     
- <!--       <ImageView
+     <ImageView
         android:id="@+id/mTagButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_below="@+id/mRecordButton"
         android:layout_marginTop="21dp"
         android:onClick="onClickMakeTag"
         android:scaleType="fitCenter"
-        android:layout_centerHorizontal="true" />-->
-
+        android:layout_centerHorizontal="true" 
+        android:src="@drawable/tag_now" />
+ <!--  
       <Button
           android:id="@+id/mTagButton"
           android:layout_width="wrap_content"
@@ -33,6 +33,6 @@
           android:onClick="onClickMakeTag"
           android:text="@string/makeTag"
           android:textSize="20sp"
-          android:layout_centerHorizontal="true" />
+          android:layout_centerHorizontal="true" />-->
 
 </RelativeLayout>
