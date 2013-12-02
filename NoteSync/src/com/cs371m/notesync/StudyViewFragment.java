@@ -76,6 +76,8 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 					for (int i=0; i < note.timestamps.size(); i++) {
 						long ts = note.timestamps.get(i);
 						if (ts > pos) {
+							if (!pController.isPlaying())
+								pController.start();
 							pController.seekTo((int)ts);
 							return;
 						}
@@ -92,6 +94,8 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 					{
 						long ts = note.timestamps.get(i);
 						if (ts < pos - 2000) {
+							if (!pController.isPlaying())
+								pController.start();
 							pController.seekTo((int)ts);
 							return;
 						}

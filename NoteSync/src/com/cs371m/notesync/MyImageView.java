@@ -105,6 +105,8 @@ public class MyImageView extends ImageView {
 					if (Point.getDistance(tP1, activity.mCurrentNote.bookmarks.get(i)) < 20+THRESHOLD)
 					{	
 						long eachTime= activity.mCurrentNote.timestamps.get(i);
+						if (!myPController.isPlaying())
+							myPController.start();
 						myPController.seekTo((int) eachTime);
 						myMediaController.show();
 						
