@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -26,6 +27,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images.ImageColumns;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -99,6 +101,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	private static Uri fileUri;
 
+	private static String fileString;
+
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -115,15 +119,61 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				// Image capture failed, advise user
 			}
 		}
+		if (requestCode == GALLERY_PICTURE) {
+			if (resultCode == RESULT_OK) {
+				if (data != null) {
+					Cursor cursor = getContentResolver().query(data.getData(),
+							null, null, null, null);
+					if (cursor != null) {
+
+						cursor.moveToFirst();
+
+						int idx = cursor.getColumnIndex(ImageColumns.DATA);
+						fileString = cursor.getString(idx);
+					}
+				}
+			}
+		}
 		showEditRecInfoDialog();
+	}
+
+	private Intent pictureActionIntent = null;
+	protected static final int CAMERA_REQUEST = 0;
+	protected static final int GALLERY_PICTURE = 1;
+
+	private void startDialog() {
+		AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this);
+		myAlertDialog.setTitle("Upload Pictures Option");
+		myAlertDialog.setMessage("Attach visual note from:");
+
+		myAlertDialog.setPositiveButton("Gallery",
+				new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				pictureActionIntent = new Intent(
+						Intent.ACTION_GET_CONTENT, null);
+				pictureActionIntent.setType("image/*");
+				pictureActionIntent.putExtra("return-data", true);
+				startActivityForResult(pictureActionIntent,
+						GALLERY_PICTURE);
+			}
+		});
+
+		myAlertDialog.setNegativeButton("Camera",
+				new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				startCameraIntent();
+			}
+		});
+		myAlertDialog.show();
 	}
 
 	public void startCameraIntent() {
 		// create Intent to take a picture and return control to the calling application
-		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		pictureActionIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
 		fileUri = Helper.getOutputMediaFileUri(MEDIA_TYPE_IMAGE, this.getApplicationContext()); // create a file to save the image
 
+		fileString = fileUri.getPath();
 		//TODO: Not saving to correct output path.
 		/*
 		startRecTime = "TESTNAME"; //ignore DST?
@@ -134,10 +184,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		fileUri = Uri.fromFile(new File(temp));
 		 */
 
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+		pictureActionIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
 		// start the image capture Intent
-		startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+		startActivityForResult(pictureActionIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 	}
 
 	public void showEditRecInfoDialog() {
@@ -145,7 +195,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		DialogFragment dialog = new EditRecInfoDialogFragment();
 		dialog.show(getFragmentManager(), "Edit Title Fragment");
 	}
-	
+
 	public void showReEditRecInfoDialog() {
 		// Create an instance of the dialog fragment and show it
 		DialogFragment dialog = new ReEditRecInfoDialogFragment();
@@ -237,7 +287,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mFileName = ((RecordService) mBoundRecService).mFileName;
 			mBoundRecService.Stop();
 		}
-		startCameraIntent();
+		startDialog();
 	}
 
 	public void onClickStartRec(View v) {
@@ -257,7 +307,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public void onClickMakeTag(View v)
 	{
 		Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-	    findViewById(R.id.mTagButton).startAnimation(shake);
+		findViewById(R.id.mTagButton).startAnimation(shake);
 		//Get time since start of recording
 		if (isRecording)
 		{
@@ -395,20 +445,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				Note perNote= new Note();
 				perNote.topic=inputVals[0];
 				perNote.course=inputVals[1];
-				
+
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.DATE, 1);
 				SimpleDateFormat format1 = new SimpleDateFormat("MM-dd-yyyy");
 
 				String formatted = format1.format(cal.getTime());
-				
+
 				perNote.date = formatted;
 				//Update timeStamp
 
 				//Debug
 				perNote.timestamps=tempTimestamps;
 				perNote.recording = mFileName;
-				perNote.image = fileUri.getPath();
+				//perNote.image = fileUri.getPath();
+				perNote.image = fileString;
 				//Rest temparray list
 				notes.add(perNote);
 				tempTimestamps=new ArrayList<Long>();
@@ -699,7 +750,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		return super.onContextItemSelected(item);
 	}
-	
+
 	/* Second edit Dialog */
 
 	public static class ReEditRecInfoDialogFragment extends DialogFragment 
@@ -747,13 +798,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}); 
 			txtInputVals[0].setText(notes.get(currentIndex).topic);
 			txtInputVals[1].setText(notes.get(currentIndex).course);
-			
+
 
 			//Return the created dialogue box
 			return builder.create();
 
 		}
-		
+
 
 
 		@Override
