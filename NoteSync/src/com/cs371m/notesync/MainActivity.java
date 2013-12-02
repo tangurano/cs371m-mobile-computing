@@ -1,7 +1,6 @@
 package com.cs371m.notesync;
 
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.Locale;
 
 import android.app.ActionBar;
@@ -36,6 +35,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -250,7 +251,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	public void onClickMakeTag(View v)
 	{
-
+		Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+	    findViewById(R.id.mTagButton).startAnimation(shake);
 		//Get time since start of recording
 		if (isRecording)
 		{

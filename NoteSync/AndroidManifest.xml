@@ -25,6 +25,7 @@
             android:name="com.cs371m.notesync.MainActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait">
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
