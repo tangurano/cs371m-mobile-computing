@@ -148,8 +148,8 @@ public class MyImageView extends ImageView {
 				{	
 					//Are you sure to make this mark?
 					//Create confirmation dialog
-					confirmDialog dialog=new confirmDialog();
-		
+					//confirmDialog dialog=new confirmDialog();
+					
 					Point point = new Point(event.getX(), event.getY());
 					activity.mCurrentNote.bookmarks.add(point);
 					invalidate();
@@ -159,44 +159,50 @@ public class MyImageView extends ImageView {
 			}
 		}
 
-		@SuppressLint("ValidFragment")
-		public class confirmDialog extends DialogFragment 
+
+		/*
+		public void drawCircle(Point p)
 		{
 			
-			//Source:http://developer.android.com/guide/topics/ui/dialogs.html
-			@Override
-		    public Dialog onCreateDialog(Bundle savedInstanceState) 
-			{
-		        // Use the Builder class for convenient dialog construction
-		        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		        builder.setMessage(R.string.confirmAddNote)
-		               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-		                   public void onClick(DialogInterface dialog, int id) 
-		                   {
-		                	  
-		                	 /*  
-		                	 drawCircle();
-		   					activity.mCurrentNote.bookmarks.add(point);
-		   					invalidate();
-		   					Log.d(DEBUG_TAG, "marked point: " + point);	
-		   					*/
-		                	   Log.v(DEBUG_TAG, "OK!!");
-		                	   
-		                	  
-		                   }
-		               })
-		               .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-		                   public void onClick(DialogInterface dialog, int id) {
-		                       // User cancelled the dialog
-		                	   Log.v(DEBUG_TAG, "CANCEL!!");
-		                   }
-		               });
-		        // Create the AlertDialog object and return it
-		        return builder.create();
-		    }
-
 		}
-
+		*/
+//		
+//		public class confirmDialog extends DialogFragment 
+//		{
+//			
+//			//Source:http://developer.android.com/guide/topics/ui/dialogs.html
+//			@Override
+//		    public Dialog onCreateDialog(Bundle savedInstanceState) 
+//			{
+//		        // Use the Builder class for convenient dialog construction
+//		        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//		        builder.setMessage(R.string.confirmAddNote)
+//		               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+//		                   public void onClick(DialogInterface dialog, int id) 
+//		                   {
+//		                	  
+//		                	 /*  
+//		                	 drawCircle();
+//		   					activity.mCurrentNote.bookmarks.add(point);
+//		   					invalidate();
+//		   					Log.d(DEBUG_TAG, "marked point: " + point);	
+//		   					*/
+//		                	   Log.v(DEBUG_TAG, "OK!!");
+//		                	   
+//		                	  
+//		                   }
+//		               })
+//		               .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+//		                   public void onClick(DialogInterface dialog, int id) {
+//		                       // User cancelled the dialog
+//		                	   Log.v(DEBUG_TAG, "CANCEL!!");
+//		                   }
+//		               });
+//		        // Create the AlertDialog object and return it
+//		        return builder.create();
+//		    }
+//
+//		}
 	}
 
 }

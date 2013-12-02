@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +47,7 @@ public class StudyViewFragment extends Fragment { //vs static inner class?
 	PlaybackController pController;
 	Note note;
 
+	public static final int DIALOG_TUTORIAL=1;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {

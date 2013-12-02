@@ -53,7 +53,7 @@ public class RecordService extends Service{
 
 	@Override
 	public void onCreate() {
-		Toast.makeText(this, "My Service Created", Toast.LENGTH_LONG).show();
+		//Toast.makeText(this, "My Service Created", Toast.LENGTH_LONG).show();
 		Log.d(TAG, "onCreate");
 
 		mRecorder = new MediaRecorder();
@@ -62,7 +62,7 @@ public class RecordService extends Service{
 
 	@Override
 	public void onDestroy() {
-		Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
+		//Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
 		Log.d(TAG, "onDestroy");
 		if (mRecorder != null) {
 			try {
@@ -87,7 +87,7 @@ public class RecordService extends Service{
 
 	public void Stop() {
 		if (isRunning) {
-			Toast.makeText(this, "Stopped Recording", Toast.LENGTH_LONG).show();
+			//Toast.makeText(this, "Stopped Recording", Toast.LENGTH_LONG).show();
 			Log.d(TAG, "onDestroy");
 			mRecorder.stop();
 			mRecorder.release();
@@ -101,7 +101,7 @@ public class RecordService extends Service{
 		if (!isRunning) {
 			isRunning = true;
 
-			Toast.makeText(this, "Started Recording", Toast.LENGTH_LONG).show();
+			//Toast.makeText(this, "Started Recording", Toast.LENGTH_LONG).show();
 			Log.d(TAG, "onStart");
 			mLock.acquire();
 			mRecorder = new MediaRecorder();

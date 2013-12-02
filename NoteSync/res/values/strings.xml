@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">NoteSync</string>
     <string name="action_settings">Settings</string>
     <string name="title_section1">Record</string>
@@ -23,5 +22,13 @@
         <item>Edit</item>
         <item>Delete</item>
     </string-array>
-
+	<string name="help">Help</string>
+ 	<string name="helpRecord"><b>Record Screen</b>: As you record the lecture and take notes, you can save an important moment in the lecture ("Tags") using the "Tag Now" button.
+ 	Each time, write down the number that appears at your current place in the notes (a "Bookmark"). 
+ 	When you\'re finished recording, you can take a picture of your written notes and fill in some metadata about your new Note.\n\n<b>Notebook Screen</b>: Lists all your stored Notes. Tap on a Note 
+ 	to bring up the Study View of that Note. Long press to edit or delete a Note.\n\n<b>Study Screen</b>: Displays an image of your written notes and lets you listen back to your lecture.
+ 	Tap anywhere to bring up playback controls for your lecture. The next and back buttons on the edges of the control bar jump to the nearest tag.
+ 	To sync the written Bookmarks with your audio Tags, long press on each of the numbered Bookmarks in order.
+ 	Now, when you listen to your audio, you can simply tap on a Bookmark to seek to that Tag in the audio.</string>
 </resources>
+

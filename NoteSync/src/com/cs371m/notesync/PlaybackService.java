@@ -52,7 +52,7 @@ public class PlaybackService extends Service{
 
 	@Override
 	public void onCreate() {
-		Toast.makeText(this, "My Service Created", Toast.LENGTH_LONG).show();
+		//Toast.makeText(this, "My Service Created", Toast.LENGTH_LONG).show();
 		Log.d(TAG, "onCreate");
 		
 		mPlayer = null;
@@ -62,7 +62,7 @@ public class PlaybackService extends Service{
 
 	@Override
 	public void onDestroy() {
-		Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
+		//Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
 		Log.d(TAG, "onDestroy");
 		if (mPlayer != null) {
 			mPlayer.stop();
@@ -81,7 +81,7 @@ public class PlaybackService extends Service{
 
 	public void Stop() {
 		if (mPlayer!= null) { //&& mPlayer.isPlaying()
-			Toast.makeText(this, "Stopped Playing", Toast.LENGTH_LONG).show();
+			//Toast.makeText(this, "Stopped Playing", Toast.LENGTH_LONG).show();
 			mPlayer.stop();
 			mPlayer.release();
 			mLock.release();
@@ -92,7 +92,7 @@ public class PlaybackService extends Service{
 
 	public void Pause() {
 		if (mPlayer!= null && mPlayer.isPlaying()) {
-			Toast.makeText(this, "Pausing", Toast.LENGTH_LONG).show();
+			//Toast.makeText(this, "Pausing", Toast.LENGTH_LONG).show();
 			mPlayer.pause();
 			isPaused = true;
 		}
@@ -110,11 +110,11 @@ public class PlaybackService extends Service{
 		//TODO: even if running, overwrite by playing again from start
 		if (isPaused) {
 			isPaused = false;
-			Toast.makeText(this, "Resume Playing", Toast.LENGTH_LONG).show();
+			//Toast.makeText(this, "Resume Playing", Toast.LENGTH_LONG).show();
 			if (mPlayer != null)
 				mPlayer.start();
 		} else if (mPlayer == null) {
-			Toast.makeText(this, "Started Playing", Toast.LENGTH_LONG).show();
+			//Toast.makeText(this, "Started Playing", Toast.LENGTH_LONG).show();
 			Log.d(TAG, "onStart");
 			mLock.acquire();
 			mPlayer = new MediaPlayer();

@@ -81,6 +81,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	static Time time = new Time();
 	private static boolean clickedOk=false; 
 	private static boolean isRecording=false;
+	public static final int DIALOG_TUTORIAL=1;
+	int numTagsSoFar;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -106,13 +108,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
-				if (data == null)
-					Toast.makeText(this, "Image saved correctly", Toast.LENGTH_SHORT).show();
-				else
-					Toast.makeText(this, "Image saved to:\n" +
-							data.getData(), Toast.LENGTH_LONG).show();
+//				if (data == null)
+//					Toast.makeText(this, "Image saved correctly", Toast.LENGTH_SHORT).show();
+//				else
+//					Toast.makeText(this, "Image saved to:\n" +
+//							data.getData(), Toast.LENGTH_LONG).show();
 			} else if (resultCode == RESULT_CANCELED) {
 				// User cancelled the image capture
 			} else {
@@ -134,6 +137,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				}
 			}
 		}
+
 		showEditRecInfoDialog();
 	}
 
@@ -227,8 +231,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mBoundRecService = ((RecordService.LocalBinder)service).getService();
 
 			// Tell the user about this for our demo.
-			Toast.makeText(mBoundRecService, "RecordService connected",
-					Toast.LENGTH_SHORT).show();
+//			Toast.makeText(mBoundRecService, "RecordService connected",
+//					Toast.LENGTH_SHORT).show();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -236,8 +240,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// unexpectedly disconnected -- that is, its process crashed.
 			// Because it is running in our same process, we should never
 			// see this happen.
-			Toast.makeText(mBoundRecService, "RecordService disconnected",
-					Toast.LENGTH_SHORT).show();
+//			Toast.makeText(mBoundRecService, "RecordService disconnected",
+//					Toast.LENGTH_SHORT).show();
 			mBoundRecService = null;
 
 		}
@@ -316,6 +320,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			Long offset = currTime - startRecTime;
 			//add to temp arrayList of timestamps
 			tempTimestamps.add(offset);
+			//Displays number of tags made so far
+			numTagsSoFar++;
+			Toast.makeText(this, "Tag #: "+numTagsSoFar,Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -329,10 +336,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// service that we know is running in our own process, we can
 			// cast its IBinder to a concrete class and directly access it.
 			mBoundPlayService = ((PlaybackService.LocalBinder)service).getService();
-
-			// Tell the user about this for our demo.
-			Toast.makeText(mBoundPlayService, "PlaybackService connected",
-					Toast.LENGTH_SHORT).show();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -340,8 +343,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// unexpectedly disconnected -- that is, its process crashed.
 			// Because it is running in our same process, we should never
 			// see this happen.
-			Toast.makeText(mBoundPlayService, "PlaybackService disconnected",
-					Toast.LENGTH_SHORT).show();
+
 			mBoundPlayService = null;
 
 		}
@@ -415,8 +417,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					inputVals[0]= txtInputVals[0].getText().toString();
 					txtInputVals[1]= (EditText) ((AlertDialog) dialog).findViewById(R.id.changeClass); 
 					inputVals[1]= txtInputVals[1].getText().toString();
-					txtInputVals[2]= (EditText) ((AlertDialog) dialog).findViewById(R.id.changeTags); 
-					inputVals[2]= txtInputVals[2].getText().toString();
 					clickedOk=true;
 
 				}
@@ -476,6 +476,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
+		//Initialize number of tags made so far
+		
 		mStartRecording = true;
 		mStartPlaying = true;
 		//FIXME: doesn't work b/c fragment not visible
@@ -487,7 +489,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		tempTimestamps= new ArrayList<Long>();
-
+		numTagsSoFar=0;
+		
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -527,7 +530,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.record_screen, menu);
 		return true;
 	}
 
@@ -648,7 +651,42 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return rootView;
 		}
 	}
+	
+	protected Dialog onCreateDialog(int id)
+	{
+			Dialog dialog = null;
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			switch(id)
+			{
+			
+					case DIALOG_TUTORIAL:
+						// Create the quit confirmation dialog
+						builder.setMessage(R.string.helpRecord)
+						.setCancelable(true)
+						.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								//Make a toast
+							}
+						});
+						dialog = builder.create();
+						break;
 
+			}
+			return dialog;
+		}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) 
+		{
+			//Tutorial/Help Dialog
+			case R.id.help:
+				showDialog(DIALOG_TUTORIAL);
+				return true;
+		}
+		return false;
+	}
 
 	@Override
 	protected void onResume() {
