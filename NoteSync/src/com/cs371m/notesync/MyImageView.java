@@ -2,12 +2,15 @@ package com.cs371m.notesync;
 
 import java.util.ArrayList;
 
+import android.R.color;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -30,7 +33,7 @@ public class MyImageView extends ImageView {
 	MediaController myMediaController;
 	PlaybackController myPController;
 	private static final String DEBUG_TAG = "MyImageView";
-	private static final float THRESHOLD=5;
+	private static final float THRESHOLD=40;
 	public MyImageView(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
@@ -42,6 +45,7 @@ public class MyImageView extends ImageView {
 		super(context, attrs);
 		Log.v(DEBUG_TAG,"myImageView Constructor");
 		activity = (MainActivity) context;
+		
 	}
 	public void setControllers(MediaController mediaController, PlaybackController playbackController)
 	{
@@ -56,7 +60,14 @@ public class MyImageView extends ImageView {
 		Log.v(DEBUG_TAG,"onDraw()");
 		if (activity != null && activity.mCurrentNote != null && activity.mCurrentNote.bookmarks != null) {
 			for (Point point : activity.mCurrentNote.bookmarks) {
-				canvas.drawCircle(point.x, point.y, 20, paint);
+				//canvas.drawCircle(point.x, point.y, 20, paint);
+				paint.setStrokeWidth(10);
+				paint.setColor(Color.RED);
+				canvas.drawLine(point.x - 29, point.y - 40, point.x + 29, point.y - 40, paint);
+				canvas.drawLine(point.x - 24, point.y - 40, point.x - 24, point.y + 44, paint);
+				canvas.drawLine(point.x + 24, point.y - 40, point.x + 24, point.y + 44, paint);
+				canvas.drawLine(point.x - 24, point.y + 40, point.x + 3 , point.y + 16, paint);
+				canvas.drawLine(point.x + 24, point.y + 40, point.x - 3 , point.y + 16, paint);
 				// Log.d(TAG, "Painting: "+point);
 			}
 		}
@@ -102,7 +113,7 @@ public class MyImageView extends ImageView {
 
 				for (int i=0; i< activity.mCurrentNote.bookmarks.size();i++)
 				{
-					if (Point.getDistance(tP1, activity.mCurrentNote.bookmarks.get(i)) < 20+THRESHOLD)
+					if (Point.getDistance(tP1, activity.mCurrentNote.bookmarks.get(i)) < THRESHOLD)
 					{	
 						long eachTime= activity.mCurrentNote.timestamps.get(i);
 						myPController.seekTo((int) eachTime);
@@ -145,12 +156,8 @@ public class MyImageView extends ImageView {
 
 			}
 		}
-		/*
-		public void drawCircle(Point p)
-		{
-			
-		}
-		*/
+
+		@SuppressLint("ValidFragment")
 		public class confirmDialog extends DialogFragment 
 		{
 			

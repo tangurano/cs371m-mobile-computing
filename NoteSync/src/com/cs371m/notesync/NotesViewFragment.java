@@ -1,5 +1,8 @@
 package com.cs371m.notesync;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -24,6 +27,7 @@ public class NotesViewFragment extends ListFragment{
 	
 	NotesAdapter adapter;
 	MainActivity activity;
+	ArrayList<Note> reversedNotes = new ArrayList<Note>();
 
 	public NotesViewFragment() {
 	}
@@ -120,6 +124,8 @@ public class NotesViewFragment extends ListFragment{
 	
 	public void updateList() {
 		adapter.clear();
-		adapter.addAll(activity.notes);
+		reversedNotes = new ArrayList<Note>(activity.notes);
+		Collections.reverse(reversedNotes);
+		adapter.addAll(reversedNotes);
 	}
 }

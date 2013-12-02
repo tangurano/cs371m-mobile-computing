@@ -1,6 +1,8 @@
 package com.cs371m.notesync;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -388,6 +390,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				Note perNote= new Note();
 				perNote.topic=inputVals[0];
 				perNote.course=inputVals[1];
+				
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.DATE, 1);
+				SimpleDateFormat format1 = new SimpleDateFormat("MM-dd-yyyy");
+
+				String formatted = format1.format(cal.getTime());
+				
+				perNote.date = formatted;
 				//Update timeStamp
 
 				//Debug
