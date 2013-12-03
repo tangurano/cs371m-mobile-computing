@@ -302,6 +302,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mRecordButton.setImageResource(R.drawable.stop_button); 
 			//mRecordButton.setText(R.string.stopRecord);
 		} else {
+			numTagsSoFar = 0; //reset counter
 			mRecordButton.setImageResource(R.drawable.record_button); 
 			//mRecordButton.setText(R.string.startRecord);
 		}
